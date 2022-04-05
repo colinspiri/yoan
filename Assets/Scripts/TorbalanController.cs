@@ -13,7 +13,6 @@ public class TorbalanController : MonoBehaviour {
     
     // public constants
     public List<Transform> passiveRoute;
-    public float closeEnoughDistance;
     public float passiveSpeed;
     public float chaseSpeed;
     [Range(0, 360)] public float searchLookAngle;
@@ -39,8 +38,14 @@ public class TorbalanController : MonoBehaviour {
         ChangeState(AIState.Passive);
 
         senses.onPlayerEnterSight += () => {
-            if (state == AIState.Passive || state == AIState.Search) ChangeState(AIState.Search);
+            if(state == AIState.Passive) ChangeState(AIState.Search);
+            else if(state == AIState.Search) ChangeState(AIState.Search);
         };
+        senses.onHearPlayer.AddListener(() => {
+            Debug.Log("Torbalan heard player");
+            if(state == AIState.Passive) ChangeState(AIState.Search);
+            else if(state == AIState.Search) ChangeState(AIState.Search);
+        });
     }
 
     // Update is called once per frame
@@ -67,13 +72,13 @@ public class TorbalanController : MonoBehaviour {
         }
             
         // if player noticed, chase
-        if(senses.PlayerNoticed()) ChangeState(AIState.Chase);
+        if(senses.CanSeePlayer()) ChangeState(AIState.Chase);
     }
 
     private void UpdateSearch() {
 
         // if player noticed, chase
-        if(senses.PlayerNoticed()) ChangeState(AIState.Chase);
+        if(senses.CanSeePlayer()) ChangeState(AIState.Chase);
     }
 
     private IEnumerator SearchCoroutine() {
@@ -121,11 +126,11 @@ public class TorbalanController : MonoBehaviour {
         // if close enough to the player, game over
         if (CloseEnoughToDestination()) {
             // game over
-            Debug.Log("GAME OVER");
+            MenuManager.Instance.GameOver();
         }
-            
+        
         // if player no longer within line of sight, search for player
-        if(!senses.PlayerNoticed()) ChangeState(AIState.Search);
+        if(!senses.CanSeePlayer()) ChangeState(AIState.Search);
     }
 
     private void ChangeState(AIState newState) {
@@ -177,7 +182,7 @@ public class TorbalanController : MonoBehaviour {
         // ignore vertical component
         toDestination.y = 0;
         float distance = toDestination.magnitude;
-        if(debug) Debug.Log("distance to destination = " + distance + ", compared to closeEnoughDistance = " + closeEnoughDistance);
-        return distance <= closeEnoughDistance;
+        if(debug) Debug.Log("distance to destination = " + distance + ", compared to closeEnoughDistance = " + agent.stoppingDistance);
+        return distance <= agent.stoppingDistance;
     }
 }

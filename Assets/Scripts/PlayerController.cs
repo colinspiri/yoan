@@ -11,13 +11,18 @@ public class PlayerController : MonoBehaviour
     public Transform playerCamera;
     private CharacterController controller;
     
+    // private constants
+    private float gravity = -13.0f;
+    private float moveSmoothTime = 0.3f;
+    private float mouseSmoothTime = 0.03f;
     // public constants
+    [Header("Movement")] 
     public float mouseSensitivity = 3.5f;
     public float mousePitchClamp = 90f;
-    public float walkSpeed = 6.0f;
-    public float gravity = -13.0f;
-    [Range(0.0f, 0.5f)] public float moveSmoothTime = 0.3f;
-    [Range(0.0f, 0.5f)] public float mouseSmoothTime = 0.03f;
+    public float walkSpeed;
+    // sounds
+    [Header("Sounds")] 
+    public float walkLoudness;
 
     // private state
     private float cameraPitch;
@@ -37,6 +42,8 @@ public class PlayerController : MonoBehaviour
         if (Time.deltaTime != 0) {
             UpdateMouseLook();
             UpdateMovement();
+            
+            if(currentDir.magnitude > 0) TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
         }
     }
 
@@ -65,5 +72,10 @@ public class PlayerController : MonoBehaviour
         Vector3 velocity = (transform.forward * currentDir.y + transform.right * currentDir.x) * walkSpeed + Vector3.up * velocityY;
 
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    private void OnDrawGizmos() {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, walkLoudness);
     }
 }

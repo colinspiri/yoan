@@ -1,59 +1,51 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.Events;
+using Vector3 = UnityEngine.Vector3;
 
 public class TorbalanSenses : MonoBehaviour {
+    public static TorbalanSenses Instance;
+    
     // public constants
     public LayerMask targetMask;
     public LayerMask obstacleMask;
     public float viewRadius;
     [Range(0, 360)] public float viewAngle;
-    public float timeToNoticePlayer;
 
     // state
-    private float noticeTimer;
     private bool playerWithinSight;
-    private bool playerNoticed;
     
     // callback functions
     public delegate void OnPlayerEnterSight();
     public OnPlayerEnterSight onPlayerEnterSight;
+    public UnityEvent onHearPlayer;
+
+    private void Awake() {
+        Instance = this;
+    }
 
     private void Start() {
         // calculate line of sight only occasionally
-        StartCoroutine(LookForPlayerOnDelay(0.2f));
+        StartCoroutine(LookForPlayerOnDelay(0.5f));
     }
 
-    private void Update() {
-        // player not within sight
-        if (!playerWithinSight) {
-            // Debug.Log("player not detected");
-            playerNoticed = false;
-            noticeTimer -= Time.deltaTime;
-            if (noticeTimer < 0) noticeTimer = 0;
+    public void ReportSound(Vector3 soundOrigin, float loudness) {
+        var path = new NavMeshPath();
+        bool pathFound = NavMesh.CalculatePath(transform.position, soundOrigin, NavMesh.AllAreas, path);
+        if (!pathFound) return;
+        var length = GetPathLength(path);
 
-        }
-        // player is within sight but not noticed
-        else if (!playerNoticed) {
-            // Debug.Log("player within sight... " + noticeTimer);
-            noticeTimer += Time.deltaTime;
-            if (noticeTimer >= timeToNoticePlayer) playerNoticed = true;
-        }
-        // player has been noticed
-        else {
-            // Debug.Log("player NOTICED!");
-
-            // if line of sight broken
-            if (!playerWithinSight) playerNoticed = false;
+        if (length <= loudness) {
+            onHearPlayer?.Invoke();
         }
     }
 
-    public bool PlayerWithinSight() {
+    public bool CanSeePlayer() {
         return playerWithinSight;
-    }
-    public bool PlayerNoticed() {
-        return playerNoticed;
     }
 
     private IEnumerator LookForPlayerOnDelay(float delay) {
@@ -83,6 +75,17 @@ public class TorbalanSenses : MonoBehaviour {
             }
         }
     }
+    
+    private float GetPathLength(NavMeshPath path) {
+        if (path.status != NavMeshPathStatus.PathComplete) return 0;
+        
+        float length = 0;
+        for (int i = 1; i < path.corners.Length; i++) {
+            length += Vector3.Distance(path.corners[i - 1], path.corners[i]);
+        }
+
+        return length;
+    }
 
     public Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal) {
         if (!angleIsGlobal) {
@@ -90,4 +93,9 @@ public class TorbalanSenses : MonoBehaviour {
         }
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
+    
+    // private void OnDrawGizmos() {
+    //     Gizmos.color = Color.yellow;
+    //     Gizmos.DrawWireSphere(transform.position, hearingRadius);
+    // }
 }
