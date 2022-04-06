@@ -20,13 +20,18 @@ public class PlayerController : MonoBehaviour
     public float mouseSensitivity = 3.5f;
     public float mousePitchClamp = 90f;
     public float walkSpeed;
+    public float bobAmount;
+    public float bobMagnitude;
     // sounds
     [Header("Sounds")] 
     public float walkLoudness;
 
     // private state
+    private float originalCameraY;
     private float cameraPitch;
+    private Vector3 velocity;
     private float velocityY;
+    private float cycle;
     Vector2 currentDir;
     Vector2 currentDirVelocity;
     Vector2 currentMouseDelta;
@@ -36,6 +41,10 @@ public class PlayerController : MonoBehaviour
     {
         Instance = this;
         controller = GetComponent<CharacterController>();
+    }
+
+    private void Start() {
+        originalCameraY = playerCamera.transform.position.y;
     }
 
     void Update() {
@@ -57,6 +66,14 @@ public class PlayerController : MonoBehaviour
 
         playerCamera.localEulerAngles = Vector3.right * cameraPitch;
         transform.Rotate(Vector3.up * currentMouseDelta.x * mouseSensitivity);
+        
+        // Bob head
+        cycle += velocity.magnitude * bobAmount * Time.deltaTime;
+        cycle %= 2 * Mathf.PI;
+        if (currentDirVelocity.magnitude == 0) cycle = 0;
+        Debug.Log("cycle: " + cycle);
+        
+        playerCamera.position = new Vector3(playerCamera.position.x, originalCameraY + Mathf.Sin(cycle) * bobMagnitude, playerCamera.position.z);
     }
 
     void UpdateMovement() {
@@ -69,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
         velocityY += gravity * Time.deltaTime;
 		
-        Vector3 velocity = (transform.forward * currentDir.y + transform.right * currentDir.x) * walkSpeed + Vector3.up * velocityY;
+        velocity = (transform.forward * currentDir.y + transform.right * currentDir.x) * walkSpeed + Vector3.up * velocityY;
 
         controller.Move(velocity * Time.deltaTime);
     }

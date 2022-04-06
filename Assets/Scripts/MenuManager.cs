@@ -25,7 +25,7 @@ public class MenuManager : MonoBehaviour {
     void Update() {
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if(menu.activeSelf) HideMenu();
-            else ShowMenu();
+            else if(!gameOverPanel.activeSelf) ShowMenu();
         }
 
         if (Input.GetKeyDown(KeyCode.U)) {

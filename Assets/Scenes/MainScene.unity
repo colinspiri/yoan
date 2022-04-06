@@ -311,7 +311,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -897.64746
+      value: -938.14746
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -876,7 +876,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 446
+    m_Top: 608
     m_Bottom: 34
   m_ChildAlignment: 4
   m_Spacing: 0
@@ -1269,7 +1269,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -897.64746
+      value: -919.64746
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3208,7 +3208,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -598.25885
+      value: -664.25885
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3591,6 +3591,8 @@ MonoBehaviour:
   mouseSensitivity: 3.5
   mousePitchClamp: 30
   walkSpeed: 8
+  bobAmount: 1
+  bobMagnitude: 0.25
   walkLoudness: 16.9
 --- !u!143 &1980768788
 CharacterController:
@@ -3683,7 +3685,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 446
+    m_Top: 534
     m_Bottom: 34
   m_ChildAlignment: 4
   m_Spacing: 0
@@ -3968,7 +3970,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -598.25885
+      value: -719.75885
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
