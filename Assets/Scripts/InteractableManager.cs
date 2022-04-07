@@ -8,8 +8,10 @@ public class InteractableManager : MonoBehaviour {
     public static InteractableManager Instance;
     public InteractableUI interactableUI;
 
-    // state
+    // all interactables
     private List<Interactable> allInteractables = new List<Interactable>();
+    private List<Crop> allCrops = new List<Crop>();
+    // state
     private List<Interactable> candidatesForInteraction = new List<Interactable>();
     private Interactable selectedObject;
 
@@ -58,6 +60,21 @@ public class InteractableManager : MonoBehaviour {
         interactableUI.ShowSelectedObject(selectedObject);
     }
 
+    public Crop GetClosestHarvestableCropTo(Vector3 position) {
+        float closestDistance = float.MaxValue;
+        Crop closestCrop = null;
+        foreach (var crop in allCrops) {
+            if (crop.cropState != Crop.CropState.Harvest) continue;
+            float distance = Vector3.Distance(position, crop.transform.position);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestCrop = crop;
+            }
+        }
+
+        return closestCrop;
+    }
+
     public void AddCandidate(Interactable interactable) {
         if(!candidatesForInteraction.Contains(interactable)) candidatesForInteraction.Add(interactable);
     }
@@ -67,9 +84,11 @@ public class InteractableManager : MonoBehaviour {
 
     public void AddInteractable(Interactable interactable) {
         allInteractables.Add(interactable);
+        if(interactable is Crop crop) allCrops.Add(crop);
     }
     public void RemoveInteractable(Interactable interactable) {
         allInteractables.Remove(interactable);
         if (candidatesForInteraction.Contains(interactable)) candidatesForInteraction.Remove(interactable);
+        if (interactable is Crop crop) allCrops.Remove(crop);
     }
 }

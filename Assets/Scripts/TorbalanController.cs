@@ -12,7 +12,7 @@ public class TorbalanController : MonoBehaviour {
     private TorbalanSenses senses;
     
     // public constants
-    public List<Transform> passiveRoute;
+    // public List<Transform> passiveRoute;
     public float passiveSpeed;
     public float chaseSpeed;
     [Range(0, 360)] public float searchLookAngle;
@@ -21,10 +21,10 @@ public class TorbalanController : MonoBehaviour {
     // state
     private enum AIState { Passive, Search, Chase }
     private AIState state;
+    private Vector3 targetLocation;
     // passive
-    private int nextPassiveNode;
+    private Crop targetCrop;
     // search
-    private Vector3 searchLocation;
     private Coroutine searchCoroutine;
     // chase
     
@@ -50,11 +50,6 @@ public class TorbalanController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        // DEBUG
-        /*if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeState(AIState.Passive);
-        else if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeState(AIState.Search);
-        else if(Input.GetKeyDown(KeyCode.Alpha3)) ChangeState(AIState.Chase);*/
-
         // state-specific updates
         if (state == AIState.Passive) UpdatePassive();
         else if (state == AIState.Search) UpdateSearch();
@@ -62,16 +57,18 @@ public class TorbalanController : MonoBehaviour {
     }
 
     private void UpdatePassive() {
-        // set next node as destination
-        agent.SetDestination(passiveRoute[nextPassiveNode].position);
-
-        // if close enough, go to next node
-        if (CloseEnoughToDestination()) {
-            nextPassiveNode++;
-            nextPassiveNode %= passiveRoute.Count;
+        targetCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(transform.position);
+        if (targetCrop != null) {
+            // set next node as destination
+            agent.SetDestination(targetCrop.transform.position);
+            // if close enough,
+            if (CloseEnoughToDestination()) {
+                // harvest crop
+                targetCrop.Harvest();
+            }
         }
-            
-        // if player noticed, chase
+
+        // if can see player, chase
         if(senses.CanSeePlayer()) ChangeState(AIState.Chase);
     }
 
@@ -83,7 +80,7 @@ public class TorbalanController : MonoBehaviour {
 
     private IEnumerator SearchCoroutine() {
         // go towards last known player location
-        agent.SetDestination(searchLocation);
+        agent.SetDestination(targetLocation);
 
         // wait until arrived
         while (!CloseEnoughToDestination()) {
@@ -154,19 +151,15 @@ public class TorbalanController : MonoBehaviour {
     }
 
     private void InitializePassiveState() {
-        // set next passive node equal to closest node in the path
-        for (int i = 0; i < passiveRoute.Count; i++) {
-            var distance = Vector3.Distance(transform.position, passiveRoute[i].position);
-            if (distance < Vector3.Distance(transform.position, passiveRoute[nextPassiveNode].position)) {
-                nextPassiveNode = i;
-            }
-        }
+        // set target position to closest crop
+        targetCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(transform.position);
+        targetLocation = targetCrop.transform.position;
         // set speed
         agent.speed = passiveSpeed;
     }
     private void InitializeSearchState() {
         // store last known player location
-        searchLocation = PlayerController.Instance.transform.position;
+        targetLocation = PlayerController.Instance.transform.position;
         // set speed
         agent.speed = passiveSpeed;
         // start coroutine

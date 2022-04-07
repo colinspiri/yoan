@@ -12,6 +12,6 @@ public class InteractableUI : MonoBehaviour {
     }
 
     public void ShowSelectedObject(Interactable selectedObject) {
-        interactableText.text = "E to " + selectedObject.GetUIText();
+        interactableText.text = selectedObject.GetUIText();
     }
 }

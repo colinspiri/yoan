@@ -13,7 +13,7 @@ public abstract class Interactable : MonoBehaviour {
 
     // state
     private bool selected;
-    protected bool interactable = true;
+    private bool interactable = true;
 
     protected virtual void Awake() {
         outline = GetComponent<Outline>();
@@ -55,6 +55,11 @@ public abstract class Interactable : MonoBehaviour {
     }
     private float GetAngleWithPlayer() { 
         return Vector3.Angle(PlayerController.Instance.transform.forward, transform.position - PlayerController.Instance.transform.position);
+    }
+
+    protected void SetInteractable(bool value) {
+        interactable = value;
+        if(!interactable) InteractableManager.Instance.RemoveCandidate(this);
     }
 
     public void Select() {

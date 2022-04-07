@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     public float crouchSpeed;
     public float walkSpeed;
     public float runSpeed;
-    [Header("Sounds")]
+    [Header("Sounds")] 
     public float walkLoudness;
 
     // private state
@@ -90,7 +90,6 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl)) moveState = MoveState.Crouching;
         else if (Input.GetKey(KeyCode.LeftShift)) moveState = MoveState.Running;
         else moveState = MoveState.Walking;
-        Debug.Log(moveState);
 
         // gravity
         if(controller.isGrounded) velocity.y = 0.0f;
