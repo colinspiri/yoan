@@ -38,7 +38,7 @@ public class SheepController : MonoBehaviour {
             }
         }
         else if (state == AIState.Walking) {
-            if (HasArrived()) {
+            if (CloseEnoughToDestination()) {
                 StartIdle();
             }
         }
@@ -63,11 +63,11 @@ public class SheepController : MonoBehaviour {
         state = AIState.Walking;
     }
 
-    private bool HasArrived(bool debug = false) {
+    private bool CloseEnoughToDestination(bool debug = false) {
         Vector3 toDestination = agent.destination - transform.position;
         toDestination.y = 0; // ignore vertical component
         float distance = toDestination.magnitude;
-        if(debug) Debug.Log("distance is " + distance + ", with stoppingDistance = " + agent.stoppingDistance);
+        if(debug) Debug.Log("distance to destination = " + distance + ", with to stoppingDistance = " + agent.stoppingDistance);
         return distance <= agent.stoppingDistance;
     }
 }
