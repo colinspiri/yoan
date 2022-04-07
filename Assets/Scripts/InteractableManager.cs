@@ -7,6 +7,10 @@ public class InteractableManager : MonoBehaviour {
     // components
     public static InteractableManager Instance;
     public InteractableUI interactableUI;
+    
+    // public constants
+    public float interactionRadius = 5.0f;
+    public float interactionAngle = 80.0f;
 
     // all interactables
     private List<Interactable> allInteractables = new List<Interactable>();

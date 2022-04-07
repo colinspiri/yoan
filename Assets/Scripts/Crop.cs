@@ -9,13 +9,13 @@ public class Crop : Interactable {
     // components
     public SpriteRenderer spriteRenderer;
     
-    // public constants
+    // constants
     public Sprite waterSprite;
     public Sprite harvestSprite;
     public Sprite emptySprite;
     public enum CropState { Water, Ripening, Harvest, Empty }
     public CropState cropState;
-    public float ripenTime;
+    private float ripenTime = 8;
     
     // state
     private float ripenTimer;
@@ -27,6 +27,7 @@ public class Crop : Interactable {
             CropState.Harvest => harvestSprite,
             CropState.Empty => emptySprite,
         };
+        if(cropState == CropState.Empty) SetInteractable(false);
     }
 
     protected override void Interact() {

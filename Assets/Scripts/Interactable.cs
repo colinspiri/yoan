@@ -7,10 +7,6 @@ public abstract class Interactable : MonoBehaviour {
     // components
     private Outline outline;
 
-    // public constants
-    public float interactionRadius = 5.0f;
-    public float interactionAngle = 80.0f;
-
     // state
     private bool selected;
     private bool interactable = true;
@@ -34,7 +30,7 @@ public abstract class Interactable : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         // add as candidate for selection
-        if (interactable && GetDistanceToPlayer() <= interactionRadius && GetAngleWithPlayer() <= interactionAngle){
+        if (interactable && GetDistanceToPlayer() <= InteractableManager.Instance.interactionRadius && GetAngleWithPlayer() <= InteractableManager.Instance.interactionAngle){
             InteractableManager.Instance.AddCandidate(this);
         }
         else InteractableManager.Instance.RemoveCandidate(this);
@@ -59,7 +55,9 @@ public abstract class Interactable : MonoBehaviour {
 
     protected void SetInteractable(bool value) {
         interactable = value;
-        if(!interactable) InteractableManager.Instance.RemoveCandidate(this);
+        if (!interactable) {
+            InteractableManager.Instance.RemoveCandidate(this);
+        }
     }
 
     public void Select() {
@@ -73,7 +71,7 @@ public abstract class Interactable : MonoBehaviour {
 
     private void OnDrawGizmosSelected() {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, interactionRadius);
+        Gizmos.DrawWireSphere(transform.position, InteractableManager.Instance.interactionRadius);
     }
 
     protected virtual void OnDestroy() {
