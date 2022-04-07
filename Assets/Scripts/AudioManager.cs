@@ -11,6 +11,8 @@ public class AudioManager : MonoBehaviour {
     public AudioSource runningSound;
     public AudioSource waterSound;
     public AudioSource harvestSound;
+    public AudioSource searchSound;
+    public AudioSource chaseSound;
 
     private void Awake() {
         Instance = this;
@@ -39,10 +41,8 @@ public class AudioManager : MonoBehaviour {
         }
     }
 
-    public void PlayWaterSound() {
-        waterSound.Play();
-    }
-    public void PlayHarvestSound() {
-        harvestSound.Play();
-    }
+    public void PlayWaterSound() { waterSound.Play(); }
+    public void PlayHarvestSound() { harvestSound.Play(); }
+    public void PlaySearchSound() { searchSound.Play(); }
+    public void PlayChaseSound() { chaseSound.Play(); }
 }

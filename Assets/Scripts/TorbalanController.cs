@@ -39,12 +39,14 @@ public class TorbalanController : MonoBehaviour {
 
         senses.onPlayerEnterSight += () => {
             if(state == AIState.Passive) ChangeState(AIState.Search);
-            else if(state == AIState.Search) ChangeState(AIState.Search);
         };
         senses.onHearPlayer.AddListener(() => {
             Debug.Log("Torbalan heard player");
             if(state == AIState.Passive) ChangeState(AIState.Search);
-            else if(state == AIState.Search) ChangeState(AIState.Search);
+            else if (state == AIState.Search) {
+                // update player position
+                targetLocation = PlayerController.Instance.transform.position;
+            }
         });
     }
 
@@ -164,10 +166,16 @@ public class TorbalanController : MonoBehaviour {
         agent.speed = passiveSpeed;
         // start coroutine
         searchCoroutine = StartCoroutine(SearchCoroutine());
+        
+        // play stinger
+        AudioManager.Instance.PlaySearchSound();
     }
     private void InitializeChaseState() {
         // set speed
         agent.speed = chaseSpeed;
+        
+        // play stinger
+        AudioManager.Instance.PlayChaseSound();
     }
 
     private bool CloseEnoughToDestination(bool debug = false) {
