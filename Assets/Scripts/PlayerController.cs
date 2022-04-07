@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     public float runSpeed;
     [Header("Sounds")] 
     public float walkLoudness;
+    public float runLoudness;
 
     // private state
     // camera
@@ -75,14 +76,14 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.LeftShift)) {
             moveState = MoveState.Running;
+            TorbalanSenses.Instance.ReportSound(transform.position, runLoudness);
         }
         else {
             moveState = MoveState.Walking;
+            TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
         }
         // move player
         UpdateMovement();
-        
-        if(currentDir.magnitude > 0) TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
     }
 
     private void UpdateMouseLook() {
@@ -123,8 +124,9 @@ public class PlayerController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
-    private void OnDrawGizmos() {
+    private void OnDrawGizmosSelected() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, walkLoudness);
+        Gizmos.DrawWireSphere(transform.position, runLoudness);
     }
 }
