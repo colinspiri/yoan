@@ -13,13 +13,20 @@ public class SheepController : MonoBehaviour {
     // public constants
     public float walkRadius;
     public float minIdleTime, maxIdleTime;
+    public float cropDistance;
+    public float eatTime;
     
     // state
-    private enum AIState { Idle, Walking }
+    private enum AIState { Idle, Walking, Eating }
     private AIState state = AIState.Idle;
-    private Vector3 targetPosition;
+    // idle
     private float idleTime;
     private float idleTimer;
+    // walking
+    private Vector3 targetPosition;
+    private Crop targetCrop;
+    // eating
+    private float eatingTimer;
 
     private void Awake() {
         agent = GetComponent<NavMeshAgent>();
@@ -34,14 +41,38 @@ public class SheepController : MonoBehaviour {
         if (state == AIState.Idle) {
             idleTimer += Time.deltaTime;
             if (idleTimer >= idleTime) {
-                StartWalkingSomewhere();
+                WalkToRandomLocation();
             }
         }
         else if (state == AIState.Walking) {
+            agent.SetDestination(targetPosition);
             if (CloseEnoughToDestination()) {
+                if(targetCrop == null || targetCrop.cropState != Crop.CropState.Harvest) StartIdle();
+                else StartEating();
+            }
+        }
+        else if (state == AIState.Eating) {
+            eatingTimer += Time.deltaTime;
+            if (eatingTimer >= eatTime) {
+                // destroy crop & switch back to idle
+                targetCrop.MakeEmpty();
                 StartIdle();
             }
         }
+
+        // look for closest crop
+        targetCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(transform.position);
+        if (targetCrop != null) {
+            float distance = Vector3.Distance(transform.position, targetCrop.transform.position);
+            if (distance > cropDistance) targetCrop = null;
+            // if within range and not already eating, set it as next destination
+            else if (state == AIState.Idle || state == AIState.Walking) {
+                targetPosition = targetCrop.transform.position;
+                state = AIState.Walking;
+            }
+        }
+        
+        // Debug.Log("target crop == " + (targetCrop == null ? "null" : targetCrop.name));
     }
 
     private void StartIdle() {
@@ -49,8 +80,12 @@ public class SheepController : MonoBehaviour {
         idleTimer = 0;
         state = AIState.Idle;
     }
+    private void StartEating() {
+        eatingTimer = 0;
+        state = AIState.Eating;
+    }
 
-    private void StartWalkingSomewhere() {
+    private void WalkToRandomLocation() {
         // pick random position on navmesh
         Vector3 randomDirection = Random.insideUnitSphere * walkRadius;
         randomDirection += transform.position;
@@ -69,5 +104,11 @@ public class SheepController : MonoBehaviour {
         float distance = toDestination.magnitude;
         if(debug) Debug.Log("distance to destination = " + distance + ", with to stoppingDistance = " + agent.stoppingDistance);
         return distance <= agent.stoppingDistance;
+    }
+
+    private void OnDrawGizmosSelected() {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, walkRadius);
+        Gizmos.DrawWireSphere(transform.position, cropDistance);
     }
 }
