@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -40,8 +41,10 @@ public class PlayerController : MonoBehaviour
     private Vector2 currentDirVelocity;
     private Vector2 currentMouseDelta;
     private Vector2 currentMouseDeltaVelocity;
-    private enum MoveState { Walking, Running, Crouching };
+    public enum MoveState { Still, Walking, Running, Crouching };
+
     private MoveState moveState = MoveState.Walking;
+    public MoveState GetMoveState => moveState;
 
     private void Awake()
     {
@@ -54,12 +57,32 @@ public class PlayerController : MonoBehaviour
     }
 
     void Update() {
-        if (Time.deltaTime != 0) {
-            UpdateMouseLook();
-            UpdateMovement();
-            
-            if(currentDir.magnitude > 0) TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
+        if (Time.deltaTime == 0) return;
+        
+        UpdateMouseLook();
+        
+        // get move input 
+        Vector2 targetDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        targetDir.Normalize();
+        currentDir = Vector2.SmoothDamp(currentDir, targetDir, ref currentDirVelocity, moveSmoothTime);
+
+        // set moveState based on move input
+        if (targetDir.magnitude <= 0.01) {
+            moveState = MoveState.Still;
         }
+        else if (Input.GetKey(KeyCode.LeftControl)) {
+            moveState = MoveState.Crouching;
+        }
+        else if (Input.GetKey(KeyCode.LeftShift)) {
+            moveState = MoveState.Running;
+        }
+        else {
+            moveState = MoveState.Walking;
+        }
+        // move player
+        UpdateMovement();
+        
+        if(currentDir.magnitude > 0) TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
     }
 
     private void UpdateMouseLook() {
@@ -73,24 +96,16 @@ public class PlayerController : MonoBehaviour
         playerCamera.localEulerAngles = Vector3.right * cameraPitch;
         transform.Rotate(Vector3.up * currentMouseDelta.x * mouseSensitivity);
         
-        // Bob head
-        cycle += velocity.magnitude * bobFrequency * Time.deltaTime;
-        cycle %= 2 * Mathf.PI;
-        if (currentDirVelocity.magnitude == 0 || moveState == MoveState.Crouching) cycle = 0;
-        
-        playerCamera.position = new Vector3(playerCamera.position.x, originalCameraY + Mathf.Sin(cycle) * bobMagnitude, playerCamera.position.z);
+        // bob head
+        if (moveState != MoveState.Still && moveState != MoveState.Crouching) {
+            cycle += velocity.magnitude * bobFrequency * Time.deltaTime;
+            cycle %= 2 * Mathf.PI;
+        }
+        float newCameraY = originalCameraY + Mathf.Sin(cycle) * bobMagnitude;
+        playerCamera.position = new Vector3(playerCamera.position.x, newCameraY, playerCamera.position.z);
     }
 
     private void UpdateMovement() {
-        // get input for direction
-        Vector2 targetDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        targetDir.Normalize();
-        currentDir = Vector2.SmoothDamp(currentDir, targetDir, ref currentDirVelocity, moveSmoothTime);
-        // get input for movestate
-        if (Input.GetKey(KeyCode.LeftControl)) moveState = MoveState.Crouching;
-        else if (Input.GetKey(KeyCode.LeftShift)) moveState = MoveState.Running;
-        else moveState = MoveState.Walking;
-
         // gravity
         if(controller.isGrounded) velocity.y = 0.0f;
         velocity.y += gravity * Time.deltaTime;

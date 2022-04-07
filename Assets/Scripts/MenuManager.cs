@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,6 +11,7 @@ public class MenuManager : MonoBehaviour {
     // components
     public GameObject menu;
     public GameObject gameOverPanel;
+    public TextMeshProUGUI gameOverTomatoes;
     public List<GameObject> otherUIObjects;
     
     private void Awake() {
@@ -35,6 +37,7 @@ public class MenuManager : MonoBehaviour {
 
     public void GameOver() {
         gameOverPanel.SetActive(true);
+        gameOverTomatoes.text = "You harvested " + CropCounter.Instance.GetCropsHarvested() + " tomatoes.";
         StopGame();
     }
 
@@ -58,6 +61,8 @@ public class MenuManager : MonoBehaviour {
         Cursor.visible = true;
         
         Time.timeScale = 0;
+        
+        AudioManager.Instance.StopGameSound();
     }
 
     private void ResumeGame() {
@@ -70,6 +75,8 @@ public class MenuManager : MonoBehaviour {
         Cursor.visible = false;
         
         Time.timeScale = 1;
+        
+        AudioManager.Instance.ResumeGameSound();
     }
 
     public void Play() {

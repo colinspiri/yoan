@@ -27,4 +27,8 @@ public class CropCounter : MonoBehaviour
 
         counterText.text = "harvested " + cropsHarvested + " tomatoes";
     }
+
+    public int GetCropsHarvested() {
+        return cropsHarvested;
+    }
 }
