@@ -9,6 +9,8 @@ public class AudioManager : MonoBehaviour {
     // sfx
     public AudioSource walkingSound;
     public AudioSource runningSound;
+    public AudioSource waterSound;
+    public AudioSource harvestSound;
 
     private void Awake() {
         Instance = this;
@@ -35,5 +37,12 @@ public class AudioManager : MonoBehaviour {
             walkingSound.Stop();
             if(!runningSound.isPlaying) runningSound.Play();
         }
+    }
+
+    public void PlayWaterSound() {
+        waterSound.Play();
+    }
+    public void PlayHarvestSound() {
+        harvestSound.Play();
     }
 }

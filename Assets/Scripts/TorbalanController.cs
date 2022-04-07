@@ -64,7 +64,7 @@ public class TorbalanController : MonoBehaviour {
             // if close enough,
             if (CloseEnoughToDestination()) {
                 // harvest crop
-                targetCrop.Harvest();
+                targetCrop.MakeEmpty();
             }
         }
 

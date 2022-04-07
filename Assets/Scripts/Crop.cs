@@ -34,19 +34,24 @@ public class Crop : Interactable {
         base.Interact();
         
         if (cropState == CropState.Water) Water();
-        else if (cropState == CropState.Harvest) {
-            Harvest();
-            // count crop
-            CropCounter.Instance.CountCrop();
-        }
+        else if (cropState == CropState.Harvest) Harvest();
     }
 
     private void Water() {
-        // will be ready to harvest in some time
+        cropState = CropState.Ripening;
         StartCoroutine(Ripen());
+        
+        AudioManager.Instance.PlayWaterSound();
     }
 
-    public void Harvest() {
+    private void Harvest() {
+        CropCounter.Instance.CountCrop();
+        MakeEmpty();
+        
+        AudioManager.Instance.PlayHarvestSound();
+    }
+
+    public void MakeEmpty() {
         // change state
         cropState = CropState.Empty;
         spriteRenderer.sprite = emptySprite;
@@ -56,7 +61,6 @@ public class Crop : Interactable {
     }
 
     private IEnumerator Ripen() {
-        cropState = CropState.Ripening;
         // count down timer
         ripenTimer = ripenTime;
         while (ripenTimer > 0) {
