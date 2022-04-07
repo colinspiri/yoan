@@ -33,7 +33,7 @@ public class Crop : Interactable {
     protected override void Interact() {
         base.Interact();
         
-        if (cropState == CropState.Water) Water();
+        if (cropState == CropState.Water && !WaterUI.Instance.IsWaterEmpty()) Water();
         else if (cropState == CropState.Harvest) Harvest();
     }
 
@@ -41,6 +41,8 @@ public class Crop : Interactable {
         cropState = CropState.Ripening;
         StartCoroutine(Ripen());
         
+        WaterUI.Instance.UseWater();
+
         AudioManager.Instance.PlayWaterSound();
     }
 
@@ -72,7 +74,9 @@ public class Crop : Interactable {
     }
 
     public override string GetUIText() {
-        if (cropState == CropState.Water) return "E to water tomato";
+        if (cropState == CropState.Water) {
+            return WaterUI.Instance.IsWaterEmpty() ? "out of water" : "E to water tomato";
+        }
         if (cropState == CropState.Ripening) return "ready to harvest in " + ripenTimer.ToString("0") + "s";
         if (cropState == CropState.Harvest) return "E to harvest tomato";
         return "ERROR";

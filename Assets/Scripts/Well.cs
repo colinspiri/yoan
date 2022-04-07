@@ -1,0 +1,15 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Well : Interactable {
+    protected override void Interact() {
+        base.Interact();
+        
+        WaterUI.Instance.RefillWater();
+    }
+
+    public override string GetUIText() {
+        return WaterUI.Instance.IsWaterFull() ? "water already full" : "E to refill water";
+    }
+}
