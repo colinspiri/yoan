@@ -41,11 +41,14 @@ public class TorbalanController : MonoBehaviour {
             if(state == AIState.Passive) ChangeState(AIState.Search);
         };
         senses.onHearPlayer.AddListener(() => {
-            Debug.Log("Torbalan heard player");
+            // Debug.Log("Torbalan heard player");
             if(state == AIState.Passive) ChangeState(AIState.Search);
             else if (state == AIState.Search) {
                 // update player position
                 targetLocation = PlayerController.Instance.transform.position;
+                // restart search coroutine
+                if(searchCoroutine != null) StopCoroutine(searchCoroutine);
+                searchCoroutine = StartCoroutine(SearchCoroutine());
             }
         });
     }
@@ -145,7 +148,7 @@ public class TorbalanController : MonoBehaviour {
             
         }
         // set new state
-        Debug.Log("Torbalan AI switched to " + newState);
+        // Debug.Log("Torbalan AI switched to " + newState);
         state = newState;
         if(state == AIState.Passive) InitializePassiveState();
         else if(state == AIState.Search) InitializeSearchState();
@@ -155,7 +158,7 @@ public class TorbalanController : MonoBehaviour {
     private void InitializePassiveState() {
         // set target position to closest crop
         targetCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(transform.position);
-        targetLocation = targetCrop.transform.position;
+        if(targetCrop != null) targetLocation = targetCrop.transform.position;
         // set speed
         agent.speed = passiveSpeed;
     }

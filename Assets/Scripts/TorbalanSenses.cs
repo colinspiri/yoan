@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -87,15 +88,39 @@ public class TorbalanSenses : MonoBehaviour {
         return length;
     }
 
-    public Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal) {
+    private Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal) {
         if (!angleIsGlobal) {
             angleInDegrees += transform.eulerAngles.y;
         }
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
     
-    // private void OnDrawGizmos() {
-    //     Gizmos.color = Color.yellow;
-    //     Gizmos.DrawWireSphere(transform.position, hearingRadius);
+    // private void OnSceneGUI() {
+    //     Handles.color = Color.white;
+    //     Handles.DrawWireArc(transform.position, Vector3.up, Vector3.forward, 360, viewRadius);
+    //     Vector3 viewAngleA = DirectionFromAngle(-viewAngle / 2, false);
+    //     Vector3 viewAngleB = DirectionFromAngle(viewAngle / 2, false);
+    //     
+    //     Handles.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
+    //     Handles.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
+    //
+    //     Handles.color = Color.red;
+    //     if (CanSeePlayer()) {
+    //         Handles.DrawLine(transform.position, PlayerController.Instance.transform.position);
+    //     }
     // }
+    
+    private void OnDrawGizmos() {
+        Vector3 viewAngleA = DirectionFromAngle(-viewAngle / 2, false);
+        Vector3 viewAngleB = DirectionFromAngle(viewAngle / 2, false);
+        
+        Gizmos.color = Color.white;
+        Gizmos.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
+        Gizmos.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
+
+        Gizmos.color = Color.red;
+        if (CanSeePlayer()) {
+            Gizmos.DrawLine(transform.position, PlayerController.Instance.transform.position);
+        }
+    }
 }

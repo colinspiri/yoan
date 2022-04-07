@@ -26,6 +26,7 @@ public class Crop : Interactable {
             CropState.Water => waterSprite,
             CropState.Harvest => harvestSprite,
             CropState.Empty => emptySprite,
+            _ => emptySprite
         };
         if(cropState == CropState.Empty) SetInteractable(false);
     }

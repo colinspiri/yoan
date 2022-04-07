@@ -10,6 +10,6 @@ public class Well : Interactable {
     }
 
     public override string GetUIText() {
-        return WaterUI.Instance.IsWaterFull() ? "water already full" : "E to refill water";
+        return WaterUI.Instance.IsWaterFull() ? "water is already full" : "E to refill water";
     }
 }
