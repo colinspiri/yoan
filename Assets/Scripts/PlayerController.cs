@@ -64,20 +64,20 @@ public class PlayerController : MonoBehaviour
         ChangeMoveState(MoveState.Still);
 
         walkingBobSequence = DOTween.Sequence();
+        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight, bobFrequency));
         walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight + bobMagnitude, bobFrequency));
         walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight, bobFrequency));
         walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight - bobMagnitude, bobFrequency));
-        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight, bobFrequency));
         walkingBobSequence.SetEase(Ease.InOutSine);
         walkingBobSequence.SetLoops(-1);
         walkingBobSequence.Pause();
 
         float runningBobFrequency = bobFrequency / (runSpeed / walkSpeed);
         runningBobSequence = DOTween.Sequence();
+        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight, runningBobFrequency));
         runningBobSequence.Append(playerCamera.DOMoveY(normalHeight + bobMagnitude, runningBobFrequency));
         runningBobSequence.Append(playerCamera.DOMoveY(normalHeight, runningBobFrequency));
         runningBobSequence.Append(playerCamera.DOMoveY(normalHeight - bobMagnitude, runningBobFrequency));
-        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight, runningBobFrequency));
         runningBobSequence.SetEase(Ease.InOutSine);
         runningBobSequence.SetLoops(-1);
         runningBobSequence.Pause();
@@ -171,9 +171,11 @@ public class PlayerController : MonoBehaviour
             playerCamera.DOMoveY(crouchHeight, 0.5f);
         }
         else if (newMoveState == MoveState.Walking) {
+            walkingBobSequence.Restart();
             walkingBobSequence.Play();
         }
         else if (newMoveState == MoveState.Running) {
+            walkingBobSequence.Restart();
             runningBobSequence.Play();
         }
         
