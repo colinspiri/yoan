@@ -41,15 +41,17 @@ public class PlayerController : MonoBehaviour
     private Tween crouchCameraTween;
     private Tween normalCameraTween;
     // movement
+    public enum MoveState { Still, Walking, Running, Crouching };
+    private MoveState moveState = MoveState.Still;
+    public MoveState GetMoveState => moveState;
     private Vector3 velocity;
     private Vector2 currentDir;
     private Vector2 currentDirVelocity;
     private Vector2 currentMouseDelta;
     private Vector2 currentMouseDeltaVelocity;
-    public enum MoveState { Still, Walking, Running, Crouching };
-
-    private MoveState moveState = MoveState.Still;
-    public MoveState GetMoveState => moveState;
+    // cover
+    private bool inCover;
+    public bool InCover => inCover;
 
     private void Awake()
     {
@@ -62,6 +64,15 @@ public class PlayerController : MonoBehaviour
         ChangeMoveState(MoveState.Still);
     }
 
+    public void EnterCover() {
+        // if not running, crouch
+        inCover = true;
+    }
+    public void LeaveCover() {
+        // uncrouch
+        inCover = false;
+    }
+    
     void Update() {
         if (Time.deltaTime == 0) return;
         
@@ -74,7 +85,7 @@ public class PlayerController : MonoBehaviour
 
         // change moveState based on move input
         bool moving = targetDir.magnitude > 0.01f;
-        if (Input.GetKey(KeyCode.LeftControl)) {
+        if (Input.GetKey(KeyCode.LeftControl) || inCover) {
             if(moveState != MoveState.Crouching) ChangeMoveState(MoveState.Crouching);
         }
         else if (moving && Input.GetKey(KeyCode.LeftShift)) {

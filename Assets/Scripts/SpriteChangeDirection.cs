@@ -12,6 +12,10 @@ public class SpriteChangeDirection : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        // TODO: FIX. NEED TO FACTOR IN TRANSFORM.FORWARD INstead of just being the vector from player to target
+        // if player forward and object forward are facing each other, show front
+        // if theyre in opposite directions, show back
+        // maybe use dot product
         Vector3 vectorToTarget = Camera.main.transform.position - transform.position;
         float angle = Mathf.Atan2(vectorToTarget.x, vectorToTarget.z) * Mathf.Rad2Deg;
         float angleAbs = Mathf.Abs(angle);

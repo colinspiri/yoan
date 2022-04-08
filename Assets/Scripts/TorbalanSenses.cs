@@ -46,7 +46,7 @@ public class TorbalanSenses : MonoBehaviour {
     }
 
     public bool CanSeePlayer() {
-        return playerWithinSight;
+        return playerWithinSight && !PlayerController.Instance.InCover;
     }
 
     private IEnumerator LookForPlayerOnDelay(float delay) {

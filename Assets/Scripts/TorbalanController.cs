@@ -8,6 +8,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent), typeof(TorbalanSenses))]
 public class TorbalanController : MonoBehaviour {
     // components
+    public static TorbalanController Instance;
     private NavMeshAgent agent;
     private TorbalanSenses senses;
     
@@ -29,6 +30,7 @@ public class TorbalanController : MonoBehaviour {
     // chase
     
     private void Awake() {
+        Instance = this;
         agent = GetComponent<NavMeshAgent>();
         senses = GetComponent<TorbalanSenses>();
     }
