@@ -23,14 +23,16 @@ public class InteractableManager : MonoBehaviour {
         Instance = this;
     }
 
-    // Start is called before the first frame update
-    void Start() {
-        
-    }
-
     // Update is called once per frame
     void Update() {
         SelectObjectFromCandidates();
+    }
+
+    public void CheckForHarvestableCropsLeft() {
+        foreach (var crop in allCrops) {
+            if (crop.cropState != Crop.CropState.Empty) return;
+        }
+        MenuManager.Instance.GameOver(true);
     }
 
     private void SelectObjectFromCandidates() {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour {
     public static MenuManager Instance;
@@ -11,6 +12,7 @@ public class MenuManager : MonoBehaviour {
     // components
     public GameObject menu;
     public GameObject gameOverPanel;
+    public TextMeshProUGUI gameOverMessage;
     public TextMeshProUGUI gameOverTomatoes;
     public List<GameObject> otherUIObjects;
     
@@ -29,17 +31,24 @@ public class MenuManager : MonoBehaviour {
             if(menu.activeSelf) HideMenu();
             else if(!gameOverPanel.activeSelf) ShowMenu();
         }
-
-        if (Input.GetKeyDown(KeyCode.U)) {
-            GameOver();
-        }
     }
 
-    public void GameOver() {
+    public void GameOver(bool playerSurvived = true) {
         gameOverPanel.SetActive(true);
-        var displayText = "You harvested " + TomatoCounter.Instance.PlayerTomatoes + " tomatoes.\n";
-        displayText += "The Torbalan stole " + TomatoCounter.Instance.TorbalanTomatoes + " tomatoes.";
-        gameOverTomatoes.text = displayText;
+        if (playerSurvived) {
+            gameOverPanel.GetComponent<Image>().color = Color.black;
+            gameOverMessage.text = "You survived.";
+            
+            gameOverTomatoes.text = "You harvested " + TomatoCounter.Instance.PlayerTomatoes + " tomatoes.\n" +
+                                    "The Torbalan stole " + TomatoCounter.Instance.TorbalanTomatoes + " tomatoes.";
+        }
+        else {
+            gameOverMessage.text = "You failed.";
+            
+            gameOverTomatoes.text = "The Torbalan stole " + TomatoCounter.Instance.TorbalanTomatoes + " tomatoes.\n" +
+                                    "He also stole the " + TomatoCounter.Instance.PlayerTomatoes + " you harvested.";
+        }
+        
         StopGame();
     }
 

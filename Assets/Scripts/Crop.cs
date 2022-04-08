@@ -36,6 +36,8 @@ public class Crop : Interactable {
         
         if (cropState == CropState.Water && !WaterUI.Instance.IsWaterEmpty()) Water();
         else if (cropState == CropState.Harvest) Harvest();
+        
+        InteractableManager.Instance.CheckForHarvestableCropsLeft();
     }
 
     private void Water() {
@@ -61,6 +63,8 @@ public class Crop : Interactable {
 
         // make uninteractable
         SetInteractable(false);
+        
+        InteractableManager.Instance.CheckForHarvestableCropsLeft();
     }
 
     private IEnumerator Ripen() {

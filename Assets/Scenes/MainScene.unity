@@ -382,11 +382,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 642.4381
+      value: 560.3563
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -939.86035
+      value: -836.3959
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3136,7 +3136,7 @@ GameObject:
   - component: {fileID: 1012468840}
   - component: {fileID: 1012468839}
   m_Layer: 5
-  m_Name: Game Over
+  m_Name: Message
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3201,7 +3201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Game Over
+  m_text: You survived.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d6658cec1d8674cf989670fb5fec9149, type: 2}
   m_sharedMaterial: {fileID: -4372524865951003261, guid: d6658cec1d8674cf989670fb5fec9149, type: 2}
@@ -4707,6 +4707,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menu: {fileID: 380817244}
   gameOverPanel: {fileID: 2045419948}
+  gameOverMessage: {fileID: 1012468840}
   gameOverTomatoes: {fileID: 1515452870}
   otherUIObjects:
   - {fileID: 790287377}
@@ -6621,11 +6622,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 642.4381
+      value: 560.3563
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -714.99646
+      value: -680.5083
       objectReference: {fileID: 0}
     - target: {fileID: 1737569140063103630, guid: 684ec8f3d149e49d5ae643f4650075c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

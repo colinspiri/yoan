@@ -70,10 +70,10 @@ public class TorbalanController : MonoBehaviour {
             agent.SetDestination(targetCrop.transform.position);
             // if close enough,
             if (CloseEnoughToDestination()) {
+                // count 
+                TomatoCounter.Instance.TorbalanStoleTomato();
                 // steal crop
                 targetCrop.MakeEmpty();
-                // tell tomato counter
-                TomatoCounter.Instance.TorbalanStoleTomato();
             }
         }
 
@@ -132,7 +132,7 @@ public class TorbalanController : MonoBehaviour {
         // if close enough to the player, game over
         if (CloseEnoughToDestination()) {
             // game over
-            MenuManager.Instance.GameOver();
+            MenuManager.Instance.GameOver(false);
         }
         
         // if player no longer within line of sight, search for player
