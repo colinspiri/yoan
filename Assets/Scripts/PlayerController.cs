@@ -38,8 +38,8 @@ public class PlayerController : MonoBehaviour
     private float normalHeight;
     private float cameraPitch;
     private float cycle;
-    private Tween crouchCameraTween;
-    private Tween normalCameraTween;
+    private Sequence walkingBobSequence;
+    private Sequence runningBobSequence;
     // movement
     public enum MoveState { Still, Walking, Running, Crouching };
     private MoveState moveState = MoveState.Still;
@@ -62,14 +62,31 @@ public class PlayerController : MonoBehaviour
     private void Start() {
         normalHeight = playerCamera.transform.position.y;
         ChangeMoveState(MoveState.Still);
+
+        walkingBobSequence = DOTween.Sequence();
+        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight + bobMagnitude, bobFrequency));
+        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight, bobFrequency));
+        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight - bobMagnitude, bobFrequency));
+        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight, bobFrequency));
+        walkingBobSequence.SetEase(Ease.InOutSine);
+        walkingBobSequence.SetLoops(-1);
+        walkingBobSequence.Pause();
+
+        float runningBobFrequency = bobFrequency / (runSpeed / walkSpeed);
+        runningBobSequence = DOTween.Sequence();
+        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight + bobMagnitude, runningBobFrequency));
+        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight, runningBobFrequency));
+        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight - bobMagnitude, runningBobFrequency));
+        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight, runningBobFrequency));
+        runningBobSequence.SetEase(Ease.InOutSine);
+        runningBobSequence.SetLoops(-1);
+        runningBobSequence.Pause();
     }
 
     public void EnterCover() {
-        // if not running, crouch
         inCover = true;
     }
     public void LeaveCover() {
-        // uncrouch
         inCover = false;
     }
     
@@ -116,14 +133,6 @@ public class PlayerController : MonoBehaviour
 
         playerCamera.localEulerAngles = Vector3.right * cameraPitch;
         transform.Rotate(Vector3.up * currentMouseDelta.x * mouseSensitivity);
-        
-        // bob head
-        if(moveState == MoveState.Walking || moveState == MoveState.Running) {
-            cycle += velocity.magnitude * bobFrequency * Time.deltaTime;
-            cycle %= 2 * Mathf.PI;
-            float newCameraY = normalHeight + Mathf.Sin(cycle) * bobMagnitude;
-            playerCamera.position = new Vector3(playerCamera.position.x, newCameraY, playerCamera.position.z);
-        }
     }
 
     private void UpdateMovement() {
@@ -146,7 +155,15 @@ public class PlayerController : MonoBehaviour
 
     private void ChangeMoveState(MoveState newMoveState) {
         // Debug.Log("calling ChangeMoveState(" + newMoveState + ") with old moveState = " + moveState);
-        
+        // clean up old move state
+        if (moveState == MoveState.Walking) {
+            walkingBobSequence.Pause();
+        }
+        else if (moveState == MoveState.Running) {
+            runningBobSequence.Pause();
+        }
+
+        // initialize new move state
         if (newMoveState == MoveState.Still) {
             playerCamera.DOMoveY(normalHeight, 0.5f);
         }
@@ -154,12 +171,13 @@ public class PlayerController : MonoBehaviour
             playerCamera.DOMoveY(crouchHeight, 0.5f);
         }
         else if (newMoveState == MoveState.Walking) {
-            
+            walkingBobSequence.Play();
         }
         else if (newMoveState == MoveState.Running) {
-            
+            runningBobSequence.Play();
         }
-
+        
+        // set new move state
         moveState = newMoveState;
     }
 

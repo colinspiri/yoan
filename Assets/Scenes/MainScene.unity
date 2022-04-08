@@ -5913,8 +5913,8 @@ MonoBehaviour:
   playerCamera: {fileID: 963194228}
   mouseSensitivity: 3.5
   mousePitchClamp: 30
-  bobFrequency: 1.5
-  bobMagnitude: 0.25
+  bobFrequency: 0.35
+  bobMagnitude: 0.3
   crouchHeight: 1
   crouchSpeed: 3.5
   walkSpeed: 5
