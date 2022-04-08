@@ -37,7 +37,9 @@ public class MenuManager : MonoBehaviour {
 
     public void GameOver() {
         gameOverPanel.SetActive(true);
-        gameOverTomatoes.text = "You harvested " + CropCounter.Instance.GetCropsHarvested() + " tomatoes.";
+        var displayText = "You harvested " + TomatoCounter.Instance.PlayerTomatoes + " tomatoes.\n";
+        displayText += "The Torbalan stole " + TomatoCounter.Instance.TorbalanTomatoes + " tomatoes.";
+        gameOverTomatoes.text = displayText;
         StopGame();
     }
 

@@ -70,8 +70,10 @@ public class TorbalanController : MonoBehaviour {
             agent.SetDestination(targetCrop.transform.position);
             // if close enough,
             if (CloseEnoughToDestination()) {
-                // harvest crop
+                // steal crop
                 targetCrop.MakeEmpty();
+                // tell tomato counter
+                TomatoCounter.Instance.TorbalanStoleTomato();
             }
         }
 

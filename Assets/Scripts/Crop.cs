@@ -48,7 +48,7 @@ public class Crop : Interactable {
     }
 
     private void Harvest() {
-        CropCounter.Instance.CountCrop();
+        TomatoCounter.Instance.PlayerHarvestedTomato();
         MakeEmpty();
         
         AudioManager.Instance.PlayHarvestSound();
