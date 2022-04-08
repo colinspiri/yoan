@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +24,7 @@ public class WaterUI : MonoBehaviour
     // Start is called before the first frame update
     void Start() {
         currentWater = maxWater;
-        UpdateSlider();
+        waterSlider.value = 1;
     }
 
     public void UseWater() {
@@ -44,6 +45,7 @@ public class WaterUI : MonoBehaviour
     }
 
     private void UpdateSlider() {
-        waterSlider.value = (float)currentWater / maxWater;
+        var value = (float)currentWater / maxWater;
+        waterSlider.DOValue(value, 0.5f);
     }
 }
