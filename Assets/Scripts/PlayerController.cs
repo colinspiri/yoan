@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -23,6 +24,7 @@ public class PlayerController : MonoBehaviour
     public float mousePitchClamp = 90f;
     public float bobFrequency;
     public float bobMagnitude;
+    public float crouchHeight;
     [Header("Movement")] 
     public float crouchSpeed;
     public float walkSpeed;
@@ -33,9 +35,11 @@ public class PlayerController : MonoBehaviour
 
     // private state
     // camera
-    private float originalCameraY;
+    private float normalHeight;
     private float cameraPitch;
     private float cycle;
+    private Tween crouchCameraTween;
+    private Tween normalCameraTween;
     // movement
     private Vector3 velocity;
     private Vector2 currentDir;
@@ -44,7 +48,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 currentMouseDeltaVelocity;
     public enum MoveState { Still, Walking, Running, Crouching };
 
-    private MoveState moveState = MoveState.Walking;
+    private MoveState moveState = MoveState.Still;
     public MoveState GetMoveState => moveState;
 
     private void Awake()
@@ -54,7 +58,8 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Start() {
-        originalCameraY = playerCamera.transform.position.y;
+        normalHeight = playerCamera.transform.position.y;
+        ChangeMoveState(MoveState.Still);
     }
 
     void Update() {
@@ -67,21 +72,25 @@ public class PlayerController : MonoBehaviour
         targetDir.Normalize();
         currentDir = Vector2.SmoothDamp(currentDir, targetDir, ref currentDirVelocity, moveSmoothTime);
 
-        // set moveState based on move input
-        if (targetDir.magnitude <= 0.01) {
-            moveState = MoveState.Still;
+        // change moveState based on move input
+        bool moving = targetDir.magnitude > 0.01f;
+        if (Input.GetKey(KeyCode.LeftControl)) {
+            if(moveState != MoveState.Crouching) ChangeMoveState(MoveState.Crouching);
         }
-        else if (Input.GetKey(KeyCode.LeftControl)) {
-            moveState = MoveState.Crouching;
+        else if (moving && Input.GetKey(KeyCode.LeftShift)) {
+            if(moveState != MoveState.Running) ChangeMoveState(MoveState.Running);
         }
-        else if (Input.GetKey(KeyCode.LeftShift)) {
-            moveState = MoveState.Running;
-            TorbalanSenses.Instance.ReportSound(transform.position, runLoudness);
+        else if(moving) {
+            if(moveState != MoveState.Walking) ChangeMoveState(MoveState.Walking);
         }
         else {
-            moveState = MoveState.Walking;
-            TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
+            if(moveState != MoveState.Still) ChangeMoveState(MoveState.Still);
         }
+        
+        // report sound
+        if(moveState == MoveState.Running) TorbalanSenses.Instance.ReportSound(transform.position, runLoudness); // TODO: only report every half second instead of every frame
+        else if(moveState == MoveState.Walking) TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
+
         // move player
         UpdateMovement();
     }
@@ -98,12 +107,12 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(Vector3.up * currentMouseDelta.x * mouseSensitivity);
         
         // bob head
-        if (moveState != MoveState.Still && moveState != MoveState.Crouching) {
+        if(moveState == MoveState.Walking || moveState == MoveState.Running) {
             cycle += velocity.magnitude * bobFrequency * Time.deltaTime;
             cycle %= 2 * Mathf.PI;
+            float newCameraY = normalHeight + Mathf.Sin(cycle) * bobMagnitude;
+            playerCamera.position = new Vector3(playerCamera.position.x, newCameraY, playerCamera.position.z);
         }
-        float newCameraY = originalCameraY + Mathf.Sin(cycle) * bobMagnitude;
-        playerCamera.position = new Vector3(playerCamera.position.x, newCameraY, playerCamera.position.z);
     }
 
     private void UpdateMovement() {
@@ -122,6 +131,25 @@ public class PlayerController : MonoBehaviour
         // calculate velocity
         velocity = (transform.forward * currentDir.y + transform.right * currentDir.x) * speed + Vector3.up * velocity.y;
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    private void ChangeMoveState(MoveState newMoveState) {
+        // Debug.Log("calling ChangeMoveState(" + newMoveState + ") with old moveState = " + moveState);
+        
+        if (newMoveState == MoveState.Still) {
+            playerCamera.DOMoveY(normalHeight, 0.5f);
+        }
+        else if (newMoveState == MoveState.Crouching) {
+            playerCamera.DOMoveY(crouchHeight, 0.5f);
+        }
+        else if (newMoveState == MoveState.Walking) {
+            
+        }
+        else if (newMoveState == MoveState.Running) {
+            
+        }
+
+        moveState = newMoveState;
     }
 
     private void OnDrawGizmosSelected() {

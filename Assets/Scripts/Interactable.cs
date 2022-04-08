@@ -4,27 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Interactable : MonoBehaviour {
-    // components
-    private Outline outline;
-
     // state
     private bool selected;
     private bool interactable = true;
 
-    protected virtual void Awake() {
-        outline = GetComponent<Outline>();
-    }
-
     // Start is called before the first frame update
     protected virtual void Start() {
         InteractableManager.Instance.AddInteractable(this);
-
-        if (outline != null) {
-            outline.enabled = false;
-            outline.OutlineMode = Outline.Mode.OutlineVisible;
-            outline.OutlineColor = Color.yellow;
-            outline.OutlineWidth = 4.0f;
-        }
     }
 
     // Update is called once per frame
@@ -62,16 +48,9 @@ public abstract class Interactable : MonoBehaviour {
 
     public void Select() {
         selected = true;
-        if(outline != null) outline.enabled = true;
     }
     public void Deselect() {
         selected = false;
-        if(outline != null) outline.enabled = false;
-    }
-
-    private void OnDrawGizmosSelected() {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, InteractableManager.Instance.interactionRadius);
     }
 
     protected virtual void OnDestroy() {

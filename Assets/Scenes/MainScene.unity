@@ -5915,6 +5915,7 @@ MonoBehaviour:
   mousePitchClamp: 30
   bobFrequency: 1.5
   bobMagnitude: 0.25
+  crouchHeight: 1
   crouchSpeed: 3.5
   walkSpeed: 5
   runSpeed: 8
