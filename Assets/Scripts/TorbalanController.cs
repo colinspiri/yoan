@@ -58,6 +58,7 @@ public class TorbalanController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        if (Time.deltaTime == 0) return;
         // state-specific updates
         if (state == AIState.Passive) UpdatePassive();
         else if (state == AIState.Search) UpdateSearch();
@@ -67,14 +68,21 @@ public class TorbalanController : MonoBehaviour {
     private void UpdatePassive() {
         targetCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(transform.position);
         if (targetCrop != null) {
+            // var distance = Vector3.Distance(targetCrop.transform.position, transform.position);
+            // Debug.Log("target crop = " + targetCrop.name + " with distance " + distance);
+            // walk to target crop
             targetLocation = targetCrop.transform.position;
+            agent.SetDestination(targetLocation);
+            
             // if close enough,
             if (CloseEnoughToDestination()) {
                 // count 
                 TomatoCounter.Instance.TorbalanStoleTomato();
                 // steal crop
                 targetCrop.MakeEmpty();
+                // walk to own location
                 targetLocation = transform.position;
+                agent.SetDestination(targetLocation);
             }
         }
         // otherwise walk to random point
@@ -89,9 +97,6 @@ public class TorbalanController : MonoBehaviour {
             // set destination
             agent.SetDestination(targetLocation);
         }
-        
-        // walk to target location
-        agent.SetDestination(targetLocation);
 
         // if can see player, chase
         if(senses.CanSeePlayer()) ChangeState(AIState.Chase);
