@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(NavMeshAgent), typeof(TorbalanSenses))]
 public class TorbalanController : MonoBehaviour {
@@ -66,16 +67,31 @@ public class TorbalanController : MonoBehaviour {
     private void UpdatePassive() {
         targetCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(transform.position);
         if (targetCrop != null) {
-            // set next node as destination
-            agent.SetDestination(targetCrop.transform.position);
+            targetLocation = targetCrop.transform.position;
             // if close enough,
             if (CloseEnoughToDestination()) {
                 // count 
                 TomatoCounter.Instance.TorbalanStoleTomato();
                 // steal crop
                 targetCrop.MakeEmpty();
+                targetLocation = transform.position;
             }
         }
+        // otherwise walk to random point
+        else if(CloseEnoughToDestination()) {
+            // pick random position on navmesh
+            float walkRadius = 60f;
+            Vector3 randomDirection = Random.insideUnitSphere * walkRadius;
+            randomDirection += transform.position;
+            NavMesh.SamplePosition(randomDirection, out var hit, walkRadius, 1);
+            targetLocation = hit.position;
+
+            // set destination
+            agent.SetDestination(targetLocation);
+        }
+        
+        // walk to target location
+        agent.SetDestination(targetLocation);
 
         // if can see player, chase
         if(senses.CanSeePlayer()) ChangeState(AIState.Chase);
