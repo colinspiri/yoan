@@ -37,9 +37,8 @@ public class PlayerController : MonoBehaviour
     // camera
     private float normalHeight;
     private float cameraPitch;
+    private bool bobbing;
     private float cycle;
-    private Sequence walkingBobSequence;
-    private Sequence runningBobSequence;
     // movement
     public enum MoveState { Still, Walking, Running, Crouching };
     private MoveState moveState = MoveState.Still;
@@ -62,25 +61,6 @@ public class PlayerController : MonoBehaviour
     private void Start() {
         normalHeight = playerCamera.transform.position.y;
         ChangeMoveState(MoveState.Still);
-
-        walkingBobSequence = DOTween.Sequence();
-        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight, bobFrequency));
-        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight + bobMagnitude, bobFrequency));
-        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight, bobFrequency));
-        walkingBobSequence.Append(playerCamera.DOMoveY(normalHeight - bobMagnitude, bobFrequency));
-        walkingBobSequence.SetEase(Ease.InOutSine);
-        walkingBobSequence.SetLoops(-1);
-        walkingBobSequence.Pause();
-
-        float runningBobFrequency = bobFrequency / (runSpeed / walkSpeed);
-        runningBobSequence = DOTween.Sequence();
-        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight, runningBobFrequency));
-        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight + bobMagnitude, runningBobFrequency));
-        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight, runningBobFrequency));
-        runningBobSequence.Append(playerCamera.DOMoveY(normalHeight - bobMagnitude, runningBobFrequency));
-        runningBobSequence.SetEase(Ease.InOutSine);
-        runningBobSequence.SetLoops(-1);
-        runningBobSequence.Pause();
     }
 
     public void EnterCover() {
@@ -102,7 +82,7 @@ public class PlayerController : MonoBehaviour
 
         // change moveState based on move input
         bool moving = targetDir.magnitude > 0.01f;
-        if (Input.GetKey(KeyCode.LeftControl) || inCover) {
+        if (Input.GetKey(KeyCode.LeftControl)) {
             if(moveState != MoveState.Crouching) ChangeMoveState(MoveState.Crouching);
         }
         else if (moving && Input.GetKey(KeyCode.LeftShift)) {
@@ -133,6 +113,15 @@ public class PlayerController : MonoBehaviour
 
         playerCamera.localEulerAngles = Vector3.right * cameraPitch;
         transform.Rotate(Vector3.up * currentMouseDelta.x * mouseSensitivity);
+        
+        // bob head
+        if (bobbing && (moveState == MoveState.Walking || moveState == MoveState.Running)) {
+            cycle += velocity.magnitude * bobFrequency * Time.deltaTime;
+            cycle %= 2 * Mathf.PI;
+            float newCameraY = normalHeight + Mathf.Sin(cycle) * bobMagnitude;
+            playerCamera.position = new Vector3(playerCamera.position.x, newCameraY, playerCamera.position.z);
+        }
+        else cycle = 0;
     }
 
     private void UpdateMovement() {
@@ -156,27 +145,21 @@ public class PlayerController : MonoBehaviour
     private void ChangeMoveState(MoveState newMoveState) {
         // Debug.Log("calling ChangeMoveState(" + newMoveState + ") with old moveState = " + moveState);
         // clean up old move state
-        if (moveState == MoveState.Walking) {
-            walkingBobSequence.Pause();
-        }
-        else if (moveState == MoveState.Running) {
-            runningBobSequence.Pause();
-        }
 
         // initialize new move state
         if (newMoveState == MoveState.Still) {
             playerCamera.DOMoveY(normalHeight, 0.5f);
+            bobbing = false;
         }
         else if (newMoveState == MoveState.Crouching) {
             playerCamera.DOMoveY(crouchHeight, 0.5f);
+            bobbing = false;
         }
         else if (newMoveState == MoveState.Walking) {
-            walkingBobSequence.Restart();
-            walkingBobSequence.Play();
+            if(!bobbing) playerCamera.DOMoveY(normalHeight, 0.5f).onComplete += () => bobbing = true;
         }
         else if (newMoveState == MoveState.Running) {
-            walkingBobSequence.Restart();
-            runningBobSequence.Play();
+            if(!bobbing) playerCamera.DOMoveY(normalHeight, 0.5f).onComplete += () => bobbing = true;
         }
         
         // set new move state
