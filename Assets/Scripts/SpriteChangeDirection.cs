@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,26 +10,27 @@ public class SpriteChangeDirection : MonoBehaviour {
     public Sprite leftSprite;
     public Sprite rightSprite;
 
-    // Update is called once per frame
-    void Update()
-    {
-        // TODO: FIX. NEED TO FACTOR IN TRANSFORM.FORWARD INstead of just being the vector from player to target
-        // if player forward and object forward are facing each other, show front
-        // if theyre in opposite directions, show back
-        // maybe use dot product
-        Vector3 vectorToTarget = Camera.main.transform.position - transform.position;
-        float angle = Mathf.Atan2(vectorToTarget.x, vectorToTarget.z) * Mathf.Rad2Deg;
-        float angleAbs = Mathf.Abs(angle);
+    private Camera cam;
 
-        if (angleAbs <= 75) {
-            spriteRenderer.sprite = frontSprite;
+    private void Awake() {
+        cam = FindObjectOfType<Camera>();
+    }
+
+    // Update is called once per frame
+    void Update() {
+        Vector3 toTarget = cam.transform.position - transform.position;
+        toTarget.Normalize();
+        float dot = Vector3.Dot(toTarget, transform.forward);
+
+        if (dot < -0.75) {
+            spriteRenderer.sprite = backSprite;
         }
-        else if (angleAbs <= 105) {
-            if (angle < 0) spriteRenderer.sprite = rightSprite;
-            else spriteRenderer.sprite = leftSprite;
+        else if (dot < 0.75) {
+            float angle = Vector3.SignedAngle(toTarget, transform.forward, Vector3.up);
+            spriteRenderer.sprite = angle < 0 ? leftSprite : rightSprite;
         }
         else {
-            spriteRenderer.sprite = backSprite;
+            spriteRenderer.sprite = frontSprite;
         }
     }
 }

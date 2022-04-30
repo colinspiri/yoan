@@ -12,6 +12,8 @@ public class TorbalanSenses : MonoBehaviour {
     public static TorbalanSenses Instance;
     
     // public constants
+    public bool blind;
+    public bool deaf;
     public LayerMask targetMask;
     public LayerMask obstacleMask;
     public float viewRadius;
@@ -35,6 +37,8 @@ public class TorbalanSenses : MonoBehaviour {
     }
 
     public void ReportSound(Vector3 soundOrigin, float loudness) {
+        if (deaf) return;
+        
         var path = new NavMeshPath();
         bool pathFound = NavMesh.CalculatePath(transform.position, soundOrigin, NavMesh.AllAreas, path);
         if (!pathFound) return;
@@ -46,6 +50,7 @@ public class TorbalanSenses : MonoBehaviour {
     }
 
     public bool CanSeePlayer() {
+        if (blind) return false;
         return playerWithinSight && !PlayerController.Instance.InCover;
     }
 
