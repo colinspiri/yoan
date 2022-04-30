@@ -3,21 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpriteChangeDirection : MonoBehaviour {
+public abstract class SpriteManager : MonoBehaviour {
+    // components
     public SpriteRenderer spriteRenderer;
-    public Sprite frontSprite;
-    public Sprite backSprite;
-    public Sprite leftSprite;
-    public Sprite rightSprite;
-
     private Camera cam;
+    
+    // state
+    private Sprite frontSprite;
+    private Sprite backSprite;
+    private Sprite leftSprite;
+    private Sprite rightSprite;
 
-    private void Awake() {
+    protected void Awake() {
         cam = FindObjectOfType<Camera>();
     }
 
     // Update is called once per frame
-    void Update() {
+    protected void Update() {
         Vector3 toTarget = cam.transform.position - transform.position;
         toTarget.Normalize();
         float dot = Vector3.Dot(toTarget, transform.forward);
@@ -32,5 +34,12 @@ public class SpriteChangeDirection : MonoBehaviour {
         else {
             spriteRenderer.sprite = frontSprite;
         }
+    }
+
+    protected void ChangeSprites(Sprite newFront, Sprite newBack, Sprite newLeft, Sprite newRight) {
+        frontSprite = newFront;
+        backSprite = newBack;
+        leftSprite = newLeft;
+        rightSprite = newRight;
     }
 }

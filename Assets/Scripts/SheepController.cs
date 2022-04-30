@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 public class SheepController : MonoBehaviour {
     // components
     private NavMeshAgent agent;
+    private SheepSpriteManager spriteManager;
     
     // public constants
     public float walkRadius;
@@ -30,6 +31,7 @@ public class SheepController : MonoBehaviour {
 
     private void Awake() {
         agent = GetComponent<NavMeshAgent>();
+        spriteManager = GetComponent<SheepSpriteManager>();
     }
 
     private void Start() {
@@ -79,10 +81,14 @@ public class SheepController : MonoBehaviour {
         idleTime = Random.Range(minIdleTime, maxIdleTime);
         idleTimer = 0;
         state = AIState.Idle;
+        
+        spriteManager.ShowIdle();
     }
     private void StartEating() {
         eatingTimer = 0;
         state = AIState.Eating;
+        
+        spriteManager.ShowEating();
     }
 
     private void WalkToRandomLocation() {
