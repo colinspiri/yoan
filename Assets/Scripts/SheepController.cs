@@ -47,13 +47,14 @@ public class SheepController : MonoBehaviour {
             }
         }
         else if (state == AIState.Walking) {
+            if(targetCrop == null || targetCrop.cropState != Crop.CropState.Harvest) StartIdle();
             agent.SetDestination(targetPosition);
             if (CloseEnoughToDestination()) {
-                if(targetCrop == null || targetCrop.cropState != Crop.CropState.Harvest) StartIdle();
-                else StartEating();
+                StartEating();
             }
         }
         else if (state == AIState.Eating) {
+            if(targetCrop == null || targetCrop.cropState != Crop.CropState.Harvest) StartIdle();
             eatingTimer += Time.deltaTime;
             if (eatingTimer >= eatTime) {
                 // destroy crop & switch back to idle
