@@ -14,12 +14,11 @@ public class TorbalanBT : Tree {
     }
 
     protected override Node SetupTree() {
-        Node root = new Selector(new List<Node>
-        {
-            new Sequence(new List<Node>
-            {
-                new FindNearestCrop(transform),
-                new MoveToTarget(agent),
+        Node root = new Selector(new List<Node> {
+            // steal crops
+            new Sequence(new List<Node> {
+                new MoveToNearestCrop(agent),
+                new StealCrop()
             }),
         });
 

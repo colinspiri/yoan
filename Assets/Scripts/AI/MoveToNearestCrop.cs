@@ -4,18 +4,27 @@ using UnityEngine;
 using BehaviorTree;
 using UnityEngine.AI;
 
-public class MoveToTarget : Node {
+public class MoveToNearestCrop : Node {
     private NavMeshAgent agent;
 
-    public MoveToTarget(NavMeshAgent agent) {
+    public MoveToNearestCrop(NavMeshAgent agent) {
         this.agent = agent;
     }
 
     public override NodeState Evaluate() {
-        Transform target = (Transform)GetData("target");
+        Crop targetCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(agent.transform.position);
 
+        // if no crops left
+        if (targetCrop == null) {
+            state = NodeState.FAILURE;
+            return state;
+        }
+        
+        // save target crop to blackboard
+        parent.parent.SetData("targetCrop", targetCrop);
+        
         // set destination
-        agent.SetDestination(target.position);
+        agent.SetDestination(targetCrop.transform.position);
         
         // check if close enough
         Vector3 toDestination = agent.destination - agent.transform.position;
