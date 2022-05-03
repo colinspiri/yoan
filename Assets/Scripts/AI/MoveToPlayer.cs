@@ -4,30 +4,27 @@ using UnityEngine;
 using BehaviorTree;
 using UnityEngine.AI;
 
-public class MoveToNearestCrop : Node {
+public class MoveToPlayer : Node {
     private NavMeshAgent agent;
     private float speed;
 
-    public MoveToNearestCrop(NavMeshAgent agent, float speed) {
+    public MoveToPlayer(NavMeshAgent agent, float speed) {
         this.agent = agent;
         this.speed = speed;
     }
 
     public override NodeState Evaluate() {
-        Crop targetCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(agent.transform.position);
+        GameObject player = PlayerController.Instance.gameObject;
 
-        // if no crops left
-        if (targetCrop == null) {
-            state = NodeState.FAILURE;
-            return state;
-        }
+        // save last known location to blackboard
+        parent.parent.SetData("lastKnownPlayerLocation", player.transform.position);
         
-        // save target crop to blackboard
-        parent.parent.SetData("targetCrop", targetCrop);
-
+        // play stinger
+        AudioManager.Instance.PlayChaseSound();
+        
         // set destination
         agent.speed = speed;
-        agent.SetDestination(targetCrop.transform.position);
+        agent.SetDestination(player.transform.position);
         
         // check if close enough
         Vector3 toDestination = agent.destination - agent.transform.position;
