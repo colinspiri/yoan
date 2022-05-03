@@ -23,6 +23,7 @@ public class TorbalanSenses : MonoBehaviour {
     // state
     private bool playerWithinSight;
     private float heardTimer;
+    private Vector3 playerLastKnownLocation;
     
     // callback functions
     public delegate void OnPlayerEnterSight();
@@ -54,6 +55,7 @@ public class TorbalanSenses : MonoBehaviour {
 
         if (length <= loudness) {
             heardTimer = heardTime;
+            playerLastKnownLocation = soundOrigin;
             onHearPlayer?.Invoke();
         }
     }
@@ -66,6 +68,10 @@ public class TorbalanSenses : MonoBehaviour {
     public bool CanSeePlayer() {
         if (blind) return false;
         return playerWithinSight;
+    }
+
+    public Vector3 GetPlayerLastKnownLocation() {
+        return playerLastKnownLocation;
     }
 
     private IEnumerator LookForPlayerOnDelay(float delay) {
@@ -91,6 +97,7 @@ public class TorbalanSenses : MonoBehaviour {
                 if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask) && !PlayerController.Instance.InCover) {
                     if (!playerWithinSight) {
                         playerWithinSight = true;
+                        playerLastKnownLocation = target.position;
                         onPlayerEnterSight?.Invoke();
                     }
                 }

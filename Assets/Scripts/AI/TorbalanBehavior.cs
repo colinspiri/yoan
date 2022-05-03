@@ -30,7 +30,7 @@ public class TorbalanBehavior : Tree {
             }),
             // search for player
             new Sequence(() => senses.HeardPlayer(), new List<Node> {
-                
+                new MoveToSearchLocation(agent, senses, walkSpeed),
             }),
             // steal crops
             new Sequence(() => true, new List<Node> {

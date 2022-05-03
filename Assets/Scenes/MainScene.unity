@@ -3175,6 +3175,7 @@ MonoBehaviour:
     m_Bits: 0
   viewRadius: 30
   viewAngle: 105
+  heardTime: 2
   onHearPlayer:
     m_PersistentCalls:
       m_Calls: []
