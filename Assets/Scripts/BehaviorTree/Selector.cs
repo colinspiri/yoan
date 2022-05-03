@@ -1,14 +1,22 @@
+using System;
 using System.Collections.Generic;
 
 namespace BehaviorTree
 {
-    public class Selector : Node
-    {
-        public Selector() : base() { }
-        public Selector(List<Node> children) : base(children) { }
+    public class Selector : Node {
+        private Func<bool> modifierCondition;
 
-        public override NodeState Evaluate()
-        {
+        public Selector(Func<bool> modifierCondition, List<Node> children) : base(children) {
+            this.modifierCondition = modifierCondition;
+        }
+
+        public override NodeState Evaluate() {
+            // check modifier condition first
+            if (!modifierCondition.Invoke()) {
+                state = NodeState.FAILURE;
+                return state;
+            }
+            
             foreach (Node node in children)
             {
                 switch (node.Evaluate())

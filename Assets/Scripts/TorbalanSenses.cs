@@ -18,9 +18,11 @@ public class TorbalanSenses : MonoBehaviour {
     public LayerMask obstacleMask;
     public float viewRadius;
     [Range(0, 360)] public float viewAngle;
+    public float heardTime;
 
     // state
     private bool playerWithinSight;
+    private float heardTimer;
     
     // callback functions
     public delegate void OnPlayerEnterSight();
@@ -36,6 +38,12 @@ public class TorbalanSenses : MonoBehaviour {
         StartCoroutine(LookForPlayerOnDelay(0.5f));
     }
 
+    private void Update() {
+        if (heardTimer > 0) {
+            heardTimer -= Time.deltaTime;
+        }
+    }
+
     public void ReportSound(Vector3 soundOrigin, float loudness) {
         if (deaf) return;
         
@@ -45,13 +53,19 @@ public class TorbalanSenses : MonoBehaviour {
         var length = GetPathLength(path);
 
         if (length <= loudness) {
+            heardTimer = heardTime;
             onHearPlayer?.Invoke();
         }
     }
 
+    public bool HeardPlayer() {
+        if (deaf) return false;
+        return heardTimer > 0;
+    }
+
     public bool CanSeePlayer() {
         if (blind) return false;
-        return playerWithinSight && !PlayerController.Instance.InCover;
+        return playerWithinSight;
     }
 
     private IEnumerator LookForPlayerOnDelay(float delay) {
@@ -62,6 +76,8 @@ public class TorbalanSenses : MonoBehaviour {
     }
 
     private void LookForPlayer() {
+        if (blind) return;
+        
         playerWithinSight = false;
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
         // search through all targets in the radius
@@ -72,7 +88,7 @@ public class TorbalanSenses : MonoBehaviour {
             if (Vector3.Angle(transform.forward, directionToTarget) < viewAngle / 2) {
                 float distanceToTarget = Vector3.Distance(transform.position, target.position);
                 // if no obstacles between self and player
-                if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask)) {
+                if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask) && !PlayerController.Instance.InCover) {
                     if (!playerWithinSight) {
                         playerWithinSight = true;
                         onPlayerEnterSight?.Invoke();

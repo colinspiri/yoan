@@ -22,15 +22,18 @@ public class TorbalanBehavior : Tree {
     }
 
     protected override Node SetupTree() {
-        Node root = new Selector(new List<Node> {
+        Node root = new Selector(() => true, new List<Node> {
             // chase player
-            new Sequence(new List<Node> {
-                new CanSeePlayer(senses),
+            new Sequence(() => senses.CanSeePlayer(), new List<Node> {
                 new MoveToPlayer(agent, chaseSpeed),
                 new KillPlayer()
             }),
+            // search for player
+            new Sequence(() => senses.HeardPlayer(), new List<Node> {
+                
+            }),
             // steal crops
-            new Sequence(new List<Node> {
+            new Sequence(() => true, new List<Node> {
                 new MoveToNearestCrop(agent, walkSpeed),
                 new StealCrop()
             }),

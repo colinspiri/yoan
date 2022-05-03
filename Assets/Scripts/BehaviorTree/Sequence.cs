@@ -1,14 +1,21 @@
+using System;
 using System.Collections.Generic;
 
-namespace BehaviorTree
-{
-    public class Sequence : Node
-    {
-        public Sequence() : base() { }
-        public Sequence(List<Node> children) : base(children) { }
+namespace BehaviorTree {
+    public class Sequence : Node {
+        private Func<bool> modifierCondition;
 
-        public override NodeState Evaluate()
-        {
+        public Sequence(Func<bool> modifierCondition, List<Node> children) : base(children) {
+            this.modifierCondition = modifierCondition; 
+        }
+
+        public override NodeState Evaluate() {
+            // check modifier condition first
+            if (!modifierCondition.Invoke()) {
+                state = NodeState.FAILURE;
+                return state;
+            }
+            
             bool anyChildIsRunning = false;
 
             foreach (Node node in children)
