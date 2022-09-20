@@ -3114,7 +3114,6 @@ GameObject:
   - component: {fileID: 794867177}
   - component: {fileID: 794867178}
   - component: {fileID: 794867181}
-  - component: {fileID: 794867182}
   m_Layer: 0
   m_Name: Torbalan
   m_TagString: Untagged
@@ -3144,7 +3143,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 794867175}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b772a38cc099c4d38a41797c1734d425, type: 3}
   m_Name: 
@@ -3311,20 +3310,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &794867182
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 794867175}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f8afcdd43d4e4898bfe7dcbc811efe2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkSpeed: 2
-  chaseSpeed: 12
 --- !u!1001 &799106340
 PrefabInstance:
   m_ObjectHideFlags: 0

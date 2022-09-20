@@ -60,9 +60,9 @@ public class TorbalanController : MonoBehaviour {
     void Update() {
         if (Time.deltaTime == 0) return;
         // state-specific updates
-        // if (state == AIState.Passive) UpdatePassive();
-        // else if (state == AIState.Search) UpdateSearch();
-        // else if (state == AIState.Chase) UpdateChase();
+        if (state == AIState.Passive) UpdatePassive();
+        else if (state == AIState.Search) UpdateSearch();
+        else if (state == AIState.Chase) UpdateChase();
     }
 
     private void UpdatePassive() {
