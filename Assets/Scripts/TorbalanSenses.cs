@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using BehaviorDesigner.Runtime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -11,38 +12,29 @@ using Vector3 = UnityEngine.Vector3;
 public class TorbalanSenses : MonoBehaviour {
     public static TorbalanSenses Instance;
     
+    // synced with behavior tree
+    public Vector3 LastKnownPosition { get; set; }
+    public Crop NearestCrop { get; set; }
+    public Vector3 NearestCropPosition { get; set; }
+
     // public constants
-    public bool blind;
     public bool deaf;
-    public LayerMask targetMask;
-    public LayerMask obstacleMask;
-    public float viewRadius;
-    [Range(0, 360)] public float viewAngle;
     public float heardTime;
 
     // state
-    private bool playerWithinSight;
     private float heardTimer;
-    private Vector3 playerLastKnownLocation;
     
-    // callback functions
-    public delegate void OnPlayerEnterSight();
-    public OnPlayerEnterSight onPlayerEnterSight;
-    public UnityEvent onHearPlayer;
-
     private void Awake() {
         Instance = this;
-    }
-
-    private void Start() {
-        // calculate line of sight only occasionally
-        StartCoroutine(LookForPlayerOnDelay(0.5f));
     }
 
     private void Update() {
         if (heardTimer > 0) {
             heardTimer -= Time.deltaTime;
         }
+
+        NearestCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(transform.position);
+        NearestCropPosition = NearestCrop.transform.position;
     }
 
     public void ReportSound(Vector3 soundOrigin, float loudness) {
@@ -55,8 +47,8 @@ public class TorbalanSenses : MonoBehaviour {
 
         if (length <= loudness) {
             heardTimer = heardTime;
-            playerLastKnownLocation = soundOrigin;
-            onHearPlayer?.Invoke();
+            // behaviorTree.SetVariableValue("LastKnownPosition", soundOrigin);
+            LastKnownPosition = soundOrigin;
         }
     }
 
@@ -65,46 +57,6 @@ public class TorbalanSenses : MonoBehaviour {
         return heardTimer > 0;
     }
 
-    public bool CanSeePlayer() {
-        if (blind) return false;
-        return playerWithinSight;
-    }
-
-    public Vector3 GetPlayerLastKnownLocation() {
-        return playerLastKnownLocation;
-    }
-
-    private IEnumerator LookForPlayerOnDelay(float delay) {
-        while (true) {
-            yield return new WaitForSeconds(delay);
-            LookForPlayer();
-        }
-    }
-
-    private void LookForPlayer() {
-        if (blind) return;
-        
-        playerWithinSight = false;
-        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
-        // search through all targets in the radius
-        foreach (var t in targetsInViewRadius) {
-            Transform target = t.transform;
-            Vector3 directionToTarget = (target.position - transform.position).normalized;
-            // if within angle
-            if (Vector3.Angle(transform.forward, directionToTarget) < viewAngle / 2) {
-                float distanceToTarget = Vector3.Distance(transform.position, target.position);
-                // if no obstacles between self and player
-                if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask) && !PlayerController.Instance.InCover) {
-                    if (!playerWithinSight) {
-                        playerWithinSight = true;
-                        playerLastKnownLocation = target.position;
-                        onPlayerEnterSight?.Invoke();
-                    }
-                }
-            }
-        }
-    }
-    
     private float GetPathLength(NavMeshPath path) {
         if (path.status != NavMeshPathStatus.PathComplete) return 0;
         
@@ -137,18 +89,4 @@ public class TorbalanSenses : MonoBehaviour {
     //         Handles.DrawLine(transform.position, PlayerController.Instance.transform.position);
     //     }
     // }
-    
-    private void OnDrawGizmos() {
-        Vector3 viewAngleA = DirectionFromAngle(-viewAngle / 2, false);
-        Vector3 viewAngleB = DirectionFromAngle(viewAngle / 2, false);
-        
-        Gizmos.color = Color.white;
-        Gizmos.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
-        Gizmos.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
-
-        Gizmos.color = Color.red;
-        if (CanSeePlayer()) {
-            Gizmos.DrawLine(transform.position, PlayerController.Instance.transform.position);
-        }
-    }
 }

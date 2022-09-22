@@ -36,10 +36,12 @@ public class TakeCover : MonoBehaviour
         float facingAngle = Vector3.Angle(PlayerController.Instance.transform.forward, playerToCover);
         if (facingAngle > coverAngle) return false;
         
-        // check if torbalan is in front of player
-        Vector3 playerToTorbalan = TorbalanController.Instance.transform.position - playerPos;
-        float torbalanAngle = Vector3.Angle(playerToCover, playerToTorbalan);
-        if (torbalanAngle > coverAngle) return false;
+        // // check if torbalan is in front of player
+        // Vector3 playerToTorbalan = TorbalanController.Instance.transform.position - playerPos;
+        // float torbalanAngle = Vector3.Angle(playerToCover, playerToTorbalan);
+        // if (torbalanAngle > coverAngle) return false;
+        return false;
+        // TODO
 
         return true;
     }
