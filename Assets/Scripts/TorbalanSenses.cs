@@ -34,7 +34,8 @@ public class TorbalanSenses : MonoBehaviour {
         }
 
         NearestCrop = InteractableManager.Instance.GetClosestHarvestableCropTo(transform.position);
-        NearestCropPosition = NearestCrop.transform.position;
+        if(NearestCrop != null) NearestCropPosition = NearestCrop.transform.position;
+        else NearestCropPosition = Vector3.zero;
     }
 
     public void ReportSound(Vector3 soundOrigin, float loudness) {
