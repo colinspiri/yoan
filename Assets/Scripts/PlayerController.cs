@@ -96,8 +96,10 @@ public class PlayerController : MonoBehaviour
         }
         
         // report sound
-        if(moveState == MoveState.Running) TorbalanSenses.Instance.ReportSound(transform.position, runLoudness); // TODO: only report every half second instead of every frame
-        else if(moveState == MoveState.Walking) TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
+        if (TorbalanSenses.Instance != null) {
+            if(moveState == MoveState.Running) TorbalanSenses.Instance.ReportSound(transform.position, runLoudness);
+            else if(moveState == MoveState.Walking) TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
+        }
 
         // move player
         UpdateMovement();
