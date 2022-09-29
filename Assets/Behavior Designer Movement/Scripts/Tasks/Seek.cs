@@ -10,6 +10,8 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
     {
         [Tooltip("The GameObject that the agent is seeking")]
         public SharedGameObject target;
+        [Tooltip("The Crop that the agent is seeking")]
+        public SharedCrop targetCrop;
         [Tooltip("If target is null then use the target position")]
         public SharedVector3 targetPosition;
 
@@ -39,6 +41,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
             if (target.Value != null) {
                 return target.Value.transform.position;
             }
+            if (targetCrop.Value != null) {
+                return targetCrop.Value.transform.position;
+            }
             return targetPosition.Value;
         }
 
@@ -46,6 +51,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         {
             base.OnReset();
             target = null;
+            targetCrop = null;
             targetPosition = Vector3.zero;
         }
     }

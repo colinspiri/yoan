@@ -66,13 +66,13 @@ public class InteractableManager : MonoBehaviour {
         interactableUI.ShowSelectedObject(selectedObject);
     }
 
-    public Crop GetClosestHarvestableCropTo(Vector3 position) {
+    public Crop GetClosestHarvestableCropTo(Vector3 position, float maxDistance = float.MaxValue) {
         float closestDistance = float.MaxValue;
         Crop closestCrop = null;
         foreach (var crop in allCrops) {
             if (crop.cropState != Crop.CropState.Harvest) continue;
             float distance = Vector3.Distance(position, crop.transform.position);
-            if (distance < closestDistance) {
+            if (distance < closestDistance && distance < maxDistance) {
                 closestDistance = distance;
                 closestCrop = crop;
             }

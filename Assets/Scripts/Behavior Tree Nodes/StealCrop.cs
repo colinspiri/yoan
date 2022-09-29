@@ -4,16 +4,28 @@ using UnityEngine;
 
 public class StealCrop : Action {
      public SharedCrop targetCrop;
+     public float stealTime;
+
+     private float stealTimer;
+     
+     public override void OnStart() {
+          base.OnStart();
+          stealTimer = 0;
+     }
      
      public override TaskStatus OnUpdate() {
           if (targetCrop == null) {
                return TaskStatus.Failure;
           }
           
-          // add to counter
-          TomatoCounter.Instance.TorbalanStoleTomato();
+          // wait for timer
+          stealTimer += Time.deltaTime;
+          if (stealTimer < stealTime) {
+               return TaskStatus.Running;
+          }
           
           // steal crop
+          TomatoCounter.Instance.TorbalanStoleTomato();
           targetCrop.Value.MakeEmpty();
           
           return TaskStatus.Success;
