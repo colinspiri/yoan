@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Well : Interactable {
-    protected override void Interact() {
+    public override void Interact() {
         base.Interact();
         
         WaterUI.Instance.RefillWater();

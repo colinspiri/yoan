@@ -105,7 +105,6 @@ GameObject:
   m_Component:
   - component: {fileID: 237972602174298883}
   - component: {fileID: 3704518522331915101}
-  - component: {fileID: 6187208719291895153}
   m_Layer: 0
   m_Name: Tree (Skinny)
   m_TagString: Untagged
@@ -144,15 +143,3 @@ MonoBehaviour:
   m_Center: {x: 0, y: 1, z: 0}
   m_Area: 1
   m_AffectedAgents: ffffffff
---- !u!114 &6187208719291895153
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 237972602174298881}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eddd9241563c04fb0b86f28c51f51b88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

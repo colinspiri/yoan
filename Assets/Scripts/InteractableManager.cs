@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InteractableManager : MonoBehaviour {
     // components
@@ -96,5 +97,10 @@ public class InteractableManager : MonoBehaviour {
         allInteractables.Remove(interactable);
         if (candidatesForInteraction.Contains(interactable)) candidatesForInteraction.Remove(interactable);
         if (interactable is Crop crop) allCrops.Remove(crop);
+    }
+    
+    public void OnInteractInput(InputAction.CallbackContext context) {
+        if (selectedObject == null) return;
+        if(selectedObject.IsInteractable()) selectedObject.Interact();
     }
 }

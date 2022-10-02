@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -15,9 +16,16 @@ public class MenuManager : MonoBehaviour {
     public TextMeshProUGUI gameOverMessage;
     public TextMeshProUGUI gameOverTomatoes;
     public List<GameObject> otherUIObjects;
+
+    private InputActions inputActions;
     
     private void Awake() {
         Instance = this;
+    }
+
+    private void OnEnable() {
+        inputActions = new InputActions();
+        inputActions.Enable();
     }
 
     // Start is called before the first frame update
@@ -25,9 +33,8 @@ public class MenuManager : MonoBehaviour {
         ShowMenu();
     }
 
-    // Update is called once per frame
-    void Update() {
-        if (Input.GetKeyDown(KeyCode.Escape)) {
+    private void Update() {
+        if (inputActions.UI.Cancel.triggered) {
             if(menu.activeSelf) HideMenu();
             else if(!gameOverPanel.activeSelf) ShowMenu();
         }

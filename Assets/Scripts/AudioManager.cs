@@ -26,7 +26,8 @@ public class AudioManager : MonoBehaviour {
     }
 
     private void Update() {
-        var state = PlayerController.Instance.GetMoveState;
+        // TODO: add sounds to new first person controller
+        /*var state = PlayerController.Instance.GetMoveState;
         if (state == PlayerController.MoveState.Crouching || state == PlayerController.MoveState.Still) {
             walkingSound.Stop();
             runningSound.Stop();
@@ -38,7 +39,7 @@ public class AudioManager : MonoBehaviour {
         else if (state == PlayerController.MoveState.Running) {
             walkingSound.Stop();
             if(!runningSound.isPlaying) runningSound.Play();
-        }
+        }*/
     }
 
     public void PlayWaterSound() { waterSound.Play(); }

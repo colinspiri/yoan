@@ -31,7 +31,7 @@ public class Crop : Interactable {
         if(cropState == CropState.Empty) SetInteractable(false);
     }
 
-    protected override void Interact() {
+    public override void Interact() {
         base.Interact();
         
         if (cropState == CropState.Water && !WaterUI.Instance.IsWaterEmpty()) Water();
