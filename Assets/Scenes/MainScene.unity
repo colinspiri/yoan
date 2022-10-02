@@ -1018,7 +1018,19 @@ MonoBehaviour:
     m_ActionId: 408f3af5-2821-4f6d-8047-fcebb0112108
     m_ActionName: Player/Sprint[/Keyboard/leftShift]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1751787538}
+        m_TargetAssemblyTypeName: StarterAssets.FirstPersonController, Assembly-CSharp
+        m_MethodName: OnCrouchInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 75c16cd1-af51-4963-ab1c-1c3fd423ed36
     m_ActionName: Player/Crouch[/Keyboard/leftCtrl]
   m_NeverAutoSwitchControlSchemes: 0
@@ -6982,7 +6994,7 @@ GameObject:
   - component: {fileID: 1694216849}
   - component: {fileID: 1694216848}
   - component: {fileID: 1694216847}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7242,6 +7254,14 @@ PrefabInstance:
       propertyPath: _input
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 8616685848737228371, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 1973755885}
+    - target: {fileID: 8616685848737228371, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
+      propertyPath: playerInput
+      value: 
+      objectReference: {fileID: 177125685}
     - target: {fileID: 8616685848737228371, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
       propertyPath: _playerInput
       value: 
@@ -8016,6 +8036,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 5096683347426473238, guid: 9ad164742455943f0b54d077a42016b3, type: 3}
   m_PrefabInstance: {fileID: 1970756167}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1973755885 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9005220659476430823, guid: 2d3a85ecde41a8246a79669975912b74, type: 3}
+  m_PrefabInstance: {fileID: 89781751}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1980768786
 GameObject:
