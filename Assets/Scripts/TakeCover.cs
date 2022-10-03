@@ -13,7 +13,7 @@ public class TakeCover : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-        if (PlayerIsInCover()) {
+        /*if (PlayerIsInCover()) {
             if (!playerWasInCover) {
                 PlayerController.Instance.EnterCover();
                 playerWasInCover = true;
@@ -22,10 +22,10 @@ public class TakeCover : MonoBehaviour
         else if (playerWasInCover) {
             PlayerController.Instance.LeaveCover();
             playerWasInCover = false;
-        }
+        }*/
     }
 
-    private bool PlayerIsInCover() {
+    /*private bool PlayerIsInCover() {
         // check distance
         var playerPos = PlayerController.Instance.transform.position;
         float distance = Vector3.Distance(transform.position, playerPos);
@@ -44,5 +44,5 @@ public class TakeCover : MonoBehaviour
         // TODO
 
         return true;
-    }
+    }*/
 }

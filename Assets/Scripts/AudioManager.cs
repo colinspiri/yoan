@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using StarterAssets;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour {
@@ -26,20 +27,19 @@ public class AudioManager : MonoBehaviour {
     }
 
     private void Update() {
-        // TODO: add sounds to new first person controller
-        /*var state = PlayerController.Instance.GetMoveState;
-        if (state == PlayerController.MoveState.Crouching || state == PlayerController.MoveState.Still) {
+        var state = FirstPersonController.Instance.GetMoveState;
+        if (state == FirstPersonController.MoveState.Still || state == FirstPersonController.MoveState.CrouchWalking) {
             walkingSound.Stop();
             runningSound.Stop();
         }
-        else if (state == PlayerController.MoveState.Walking) {
+        else if (state == FirstPersonController.MoveState.Walking) {
             if (!walkingSound.isPlaying) walkingSound.Play();
             runningSound.Stop();
         }
-        else if (state == PlayerController.MoveState.Running) {
+        else if (state == FirstPersonController.MoveState.Running) {
             walkingSound.Stop();
             if(!runningSound.isPlaying) runningSound.Play();
-        }*/
+        }
     }
 
     public void PlayWaterSound() { waterSound.Play(); }

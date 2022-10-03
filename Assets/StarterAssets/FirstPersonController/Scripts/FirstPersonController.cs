@@ -10,8 +10,8 @@ namespace StarterAssets
 	public class FirstPersonController : MonoBehaviour
 	{
 		// components
+		public static FirstPersonController Instance;
 		public PlayerInput playerInput;
-		public GameObject mainCamera;
 		private CharacterController controller;
 		private InputActions inputActions;
 		
@@ -22,14 +22,16 @@ namespace StarterAssets
 		public float crouchSpeed = 1f;
 		[Tooltip("Acceleration and deceleration")]
 		public float speedChangeRate = 10.0f;
-		
-		[Space(10)]
+
+		[Header("Sounds")] 
+		public float walkLoudness;
+		public float runLoudness;
+
+		[Header("Player Grounded")]
 		[Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
 		public float gravity = -15.0f;
 		[Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
 		public float fallTimeout = 0.15f;
-
-		[Header("Player Grounded")]
 		[Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
 		public bool grounded = true;
 		[Tooltip("Useful for rough ground")]
@@ -48,6 +50,9 @@ namespace StarterAssets
 		public float bottomClamp = -90.0f;
 		public float rotationSpeed = 1.0f;
 		public float crouchHeight;
+		public float bobFrequency;
+		public float bobMagnitude;
+		public float bobMagnitudeCrouching;
 
 		// state
 		// input
@@ -58,6 +63,9 @@ namespace StarterAssets
 		private float cameraTargetPitch;
 		private float normalHeight;
 		private bool crouching;
+		private Tween crouchTransition;
+		private bool bobbing;
+		private float bobCycle;
 
 		// player
 		private float currentSpeed;
@@ -66,6 +74,7 @@ namespace StarterAssets
 		private float terminalVelocity = 53.0f;
 		public enum MoveState { Still, Walking, Running, CrouchWalking }
 		private MoveState moveState = MoveState.Still;
+		public MoveState GetMoveState => moveState;
 
 		// timeout deltatime
 		private float fallTimeoutDelta;
@@ -75,6 +84,7 @@ namespace StarterAssets
 		private bool IsCurrentDeviceMouse => playerInput.currentControlScheme == "KeyboardMouse";
 
 		private void Awake() {
+			Instance = this;
 			controller = GetComponent<CharacterController>();
 		}
 
@@ -94,22 +104,27 @@ namespace StarterAssets
 		private void Update() {
 			// toggle crouching
 			if (crouchInput && !crouching) {
-				cameraTarget.transform.DOMoveY(crouchHeight, 0.5f);
+				crouchTransition = cameraTarget.transform.DOMoveY(crouchHeight, 0.5f);
 				crouching = true;
 			}
 			if (crouching && !crouchInput) {
-				cameraTarget.transform.DOMoveY(normalHeight, 0.5f);
+				crouchTransition = cameraTarget.transform.DOMoveY(normalHeight, 0.5f);
 				crouching = false;
 			}
-			
-			
+
 			JumpAndGravity();
 			GroundedCheck();
 			Move();
+			
+			// report sound
+			if (TorbalanSenses.Instance != null) {
+				if(moveState == MoveState.Running) TorbalanSenses.Instance.ReportSound(transform.position, runLoudness);
+				else if(moveState == MoveState.Walking) TorbalanSenses.Instance.ReportSound(transform.position, walkLoudness);
+			}
 		}
 
 		private void LateUpdate() {
-			CameraRotation();
+			CameraMovement();
 		}
 
 		private void GroundedCheck() {
@@ -118,7 +133,7 @@ namespace StarterAssets
 			grounded = Physics.CheckSphere(spherePosition, groundedRadius, groundLayers, QueryTriggerInteraction.Ignore);
 		}
 
-		private void CameraRotation() {
+		private void CameraMovement() {
 			// if there is an input
 			var look = inputActions.Player.Look.ReadValue<Vector2>();
 			if (look.sqrMagnitude >= threshold) {
@@ -137,6 +152,19 @@ namespace StarterAssets
 				// rotate the player left and right
 				transform.Rotate(Vector3.up * rotationVelocity);
 			}
+			
+			// bob head
+			bool crouchTransitioning = crouchTransition != null && crouchTransition.IsActive() && crouchTransition.IsPlaying();
+			if (moveState != MoveState.Still && !crouchTransitioning) {
+				bobCycle += currentSpeed * bobFrequency * Time.deltaTime;
+				bobCycle %= 2 * Mathf.PI;
+				var baseHeight = crouching ? crouchHeight : normalHeight;
+				var magnitude = crouching ? bobMagnitudeCrouching : bobMagnitude;
+				float newCameraY = baseHeight + Mathf.Sin(bobCycle) * magnitude;
+				cameraTarget.transform.position = new Vector3(cameraTarget.transform.position.x, newCameraY,
+					cameraTarget.transform.position.z);
+			}
+			else bobCycle = 0;
 		}
 
 		private void Move() {
@@ -245,16 +273,18 @@ namespace StarterAssets
 			crouchInput = context.ReadValueAsButton();
 		}
 
-		private void OnDrawGizmosSelected()
-		{
+		private void OnDrawGizmosSelected() {
+			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
 			Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
 			Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
-
 			if (grounded) Gizmos.color = transparentGreen;
 			else Gizmos.color = transparentRed;
-
-			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
 			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z), groundedRadius);
+			
+			// loudness radius
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawWireSphere(transform.position, walkLoudness);
+			Gizmos.DrawWireSphere(transform.position, runLoudness);
 		}
 	}
 }
