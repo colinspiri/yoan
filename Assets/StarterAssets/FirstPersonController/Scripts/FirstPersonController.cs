@@ -98,17 +98,17 @@ namespace StarterAssets
 			fallTimeoutDelta = fallTimeout;
 			
 			// camera
-			normalHeight = cameraTarget.transform.position.y;
+			normalHeight = cameraTarget.transform.position.y - transform.position.y;
 		}
 
 		private void Update() {
 			// toggle crouching
 			if (crouchInput && !crouching) {
-				crouchTransition = cameraTarget.transform.DOMoveY(crouchHeight, 0.5f);
+				crouchTransition = cameraTarget.transform.DOMoveY(transform.position.y + crouchHeight, 0.5f);
 				crouching = true;
 			}
 			if (crouching && !crouchInput) {
-				crouchTransition = cameraTarget.transform.DOMoveY(normalHeight, 0.5f);
+				crouchTransition = cameraTarget.transform.DOMoveY(transform.position.y + normalHeight, 0.5f);
 				crouching = false;
 			}
 
@@ -160,7 +160,7 @@ namespace StarterAssets
 				bobCycle %= 2 * Mathf.PI;
 				var baseHeight = crouching ? crouchHeight : normalHeight;
 				var magnitude = crouching ? bobMagnitudeCrouching : bobMagnitude;
-				float newCameraY = baseHeight + Mathf.Sin(bobCycle) * magnitude;
+				float newCameraY = transform.position.y + baseHeight + Mathf.Sin(bobCycle) * magnitude;
 				cameraTarget.transform.position = new Vector3(cameraTarget.transform.position.x, newCameraY,
 					cameraTarget.transform.position.z);
 			}
